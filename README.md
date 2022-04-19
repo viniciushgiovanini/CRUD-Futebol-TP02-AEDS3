@@ -6,7 +6,7 @@
 
 ## Documentação 📜
 
-- A documentação pode ser encontrada [AQUI]()
+- O documento de instruções pode ser encontrado [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
 
 ## Etapas
 
@@ -16,7 +16,7 @@
 
 ## Linguagem de Desenvolvimento
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" width="40px">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="50px" />
 
 ## Desenvolvimento ✏
 
