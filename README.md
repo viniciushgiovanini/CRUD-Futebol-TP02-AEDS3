@@ -6,7 +6,11 @@
 
 ## Documentação 📜
 
+<<<<<<< HEAD
 - O documento de instruções pode ser encontrado [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
+=======
+- A documentação pode ser encontrada [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
+>>>>>>> 6633790641dfd490004234e41f760f484303599c
 
 ## Etapas
 
