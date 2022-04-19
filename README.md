@@ -20,4 +20,4 @@
 
 ## Desenvolvimento ✏
 
-Feito por: Vinícius Henrique Giovanini
+**Feito por**: [Vinícius Henrique Giovanini](https://github.com/viniciushgiovanini)
