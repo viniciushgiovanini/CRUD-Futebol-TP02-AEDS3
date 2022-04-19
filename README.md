@@ -6,7 +6,7 @@
 
 ## Documentação 📜
 
-- A documentação pode ser encontrada [AQUI]()
+- A documentação pode ser encontrada [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
 
 ## Etapas
 
