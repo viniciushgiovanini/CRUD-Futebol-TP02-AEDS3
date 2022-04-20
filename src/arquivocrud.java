@@ -13,7 +13,7 @@ public class arquivocrud {
 
     try {
 
-      PrintWriter writer = new PrintWriter("dados/futebol.db");
+      PrintWriter writer = new PrintWriter("src/database/futebol.db");
       writer.print("");
       writer.close();
 
@@ -45,7 +45,7 @@ public class arquivocrud {
     try {
       // verificarArquivo("dados/futebol.db");
       short idcabecalhosave = 0;
-      arq = new RandomAccessFile("dados/futebol.db", "rw");
+      arq = new RandomAccessFile("src/database/futebol.db", "rw");
 
       if (arq.length() == 0) {
         idcabecalhosave = ft.getIdClube();
@@ -143,7 +143,7 @@ public class arquivocrud {
       long posicaosave = 0;
       try {
 
-        arq = new RandomAccessFile("dados/futebol.db", "rw");
+        arq = new RandomAccessFile("src/database/futebol.db", "rw");
         testeArquivoVazio = arq.length();
 
         if (testeArquivoVazio != 0) {
@@ -211,7 +211,7 @@ public class arquivocrud {
     } else {
 
       try {
-        arq = new RandomAccessFile("dados/futebol.db", "rw");
+        arq = new RandomAccessFile("src/database/futebol.db", "rw");
 
         testeArquivoVazio = arq.length();
 
@@ -315,7 +315,7 @@ public class arquivocrud {
     if (retornoPesquisa >= 0) {
 
       try {
-        arq = new RandomAccessFile("dados/futebol.db", "rw");
+        arq = new RandomAccessFile("src/database/futebol.db", "rw");
         arq.seek(retornoPesquisa);
         int tamRegistro = arq.readInt();
         ba = new byte[tamRegistro];
@@ -361,7 +361,7 @@ public class arquivocrud {
     String lapide = "";
     boolean arquivoDeletado = false;
     try {
-      arq = new RandomAccessFile("dados/futebol.db", "rw");
+      arq = new RandomAccessFile("src/database/futebol.db", "rw");
 
       long idExist = procurarClube(id, ft2);
 
@@ -439,7 +439,7 @@ public class arquivocrud {
         if (stgConfirma.toUpperCase().equals("SIM")) {
 
           try {
-            arq = new RandomAccessFile("dados/futebol.db", "rw");
+            arq = new RandomAccessFile("src/database/futebol.db", "rw");
             arq.seek(receberProcura);
             int tamanhoArquivoVelho = arq.readInt();
 
@@ -521,7 +521,7 @@ public class arquivocrud {
         if (receberProcura >= 0) {
 
           try {
-            arq = new RandomAccessFile("dados/futebol.db", "rw");
+            arq = new RandomAccessFile("src/database/futebol.db", "rw");
             arq.seek(receberProcura);
             int tamanhoArquivoVelho = arq.readInt();
 
