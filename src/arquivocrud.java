@@ -14,8 +14,11 @@ public class arquivocrud {
     try {
 
       PrintWriter writer = new PrintWriter("src/database/futebol.db");
+      PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
       writer.print("");
       writer.close();
+      writer2.print("");
+      writer2.close();
 
     } catch (Exception e) {
       System.out.println("ERRO NO DELETA TUDO");
@@ -24,6 +27,35 @@ public class arquivocrud {
   }
 
   // -------------------Create---------------------------------//
+  // --------------------------------------
+  // Método escreverIndice, faz a lista de indices e sua respectiva posicao no
+  // arquivo que é um número long
+  // ESCREVE SHORT + LONG = 10 BYTES POR ESCRITA
+  // --------------------------------------
+  public void escreverIndice(long posicao, short id) {
+
+    try {
+
+      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
+
+      long tamArq = arq.length();
+      arq.seek(tamArq);
+      arq.writeShort(id);
+      arq.writeLong(posicao);
+
+      arq.close();
+
+    } catch (Exception e) {
+      String erro = e.getMessage();
+
+      if (erro.contains("No such file or directory")) {
+
+        System.out.println("Diretório do arquivo não encontrado !");
+        return;
+      }
+    }
+
+  }
 
   // --------------------------------------
   // Método escreverArquivo, esse método recebe o objeto ft com os dados ja
@@ -41,6 +73,7 @@ public class arquivocrud {
     // Escrita no Arquivo
     RandomAccessFile arq;
     byte[] ba;
+    long posiIndice = 0;
 
     try {
       // verificarArquivo("dados/futebol.db");
@@ -61,12 +94,15 @@ public class arquivocrud {
       // System.out.println(arq.getFilePointer());
       long finaldoarquivo = (long) arq.length();
       arq.seek(finaldoarquivo);
+      posiIndice = finaldoarquivo;
       // System.out.println(arq.getFilePointer());
 
       ft.setIdClube(idcabecalhosave);
       ba = ft.toByteArray();
       arq.writeInt(ba.length);
       arq.write(ba);
+
+      escreverIndice(posiIndice, idcabecalhosave);
 
     } catch (Exception e) {
       String erro = e.getMessage();
