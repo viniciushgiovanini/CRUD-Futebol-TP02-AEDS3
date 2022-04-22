@@ -155,170 +155,62 @@ public class arquivocrud {
   // -------------------Create - FIM---------------------------------//
 
   // ----------------------READ-------------------------//
-
   // --------------------------------------
-  // Método pesquisarNoArquivo recebe uma String a ser pesquisada que pode ser o
-  // ID ou o Nome presente no registro, caso for ID ele pesquisa pelo ID, caso for
-  // Nome, ele pesquisa pelo nome de cada registro, retorna a posicao do arquivo
-  // caso encontrar, retorna -1 caso não encontre o arquivo, retorna -10 em caso
-  // de erro na pesquisa
+  // Método pesquisaBinariaArquivoIndice faz a busca binaria no arquivo de
+  // indices, dessa forma retornando a posicao long no arquivo de dados, e logo
+  // ja testa se o arquivo está deletado ou não. OBS esse método só faz a procura
+  // de números.
   // --------------------------------------
-
-  public long pesquisarNoArquivo(String entrada) {
-
-    RandomAccessFile arq;
-    String lapide = "";
+  public long pesquisaBinariaArquivoIndice(int n) {
     long posicaoRetorno = -1;
-    boolean idOrnot = entrada.matches("-?\\d+");
-    boolean idDeletado = false;
-    boolean idencontrado = false;
-    boolean idnexiste = false;
-    long testeArquivoVazio = 0;
 
-    if (idOrnot == true) {
-      long posicaosave = 0;
-      try {
+    try {
+      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "r");
 
-        arq = new RandomAccessFile("src/database/futebol.db", "rw");
-        testeArquivoVazio = arq.length();
+      if (arq.length() != 0) {
 
-        if (testeArquivoVazio != 0) {
+        arq.seek(0);
+        int esq = arq.readShort();
+        int qtdElementos = (int) arq.length() / 10;
+        arq.seek(arq.length() - 10);
+        int dir = arq.readShort();
+        int mid = (esq + dir) / 2;
+        arq.seek(0);
 
-          short idproc = Short.valueOf(entrada);
-          arq.seek(2);
-          posicaoRetorno = arq.getFilePointer();
-          int tam = arq.readInt();
-          posicaosave = arq.getFilePointer();
-          short idlido = arq.readShort();
-          int contador = 0;
+        while (esq <= dir) {
+          mid = (esq + dir) / 2;
+          arq.seek(mid * 10);// Para chegar no numero desejado é so pegar o numero e X 10, pois cada 1
+                             // registro nesse arquivo de incide ocupa 10 bytes 2short e 8 do long,
+                             // respectivo ao ID e ao Endereço dele.
+          int numerodoMeio = arq.readShort();
+          if (n == numerodoMeio) {
+            posicaoRetorno = arq.readLong();
+            esq = qtdElementos;
+          } else if (n > numerodoMeio) {
 
-          long ultimaPosiArq = (long) arq.length();
-
-          while (contador <= idproc && idencontrado == false && idnexiste == false) {
-
-            if (idlido == idproc) {
-
-              lapide = arq.readUTF();
-              idencontrado = true;
-              if ((lapide.equals(" ") == true)) {
-                idDeletado = false;
-              } else {
-                idDeletado = true;
-              }
-
-            }
-
-            if ((idencontrado == false) && (posicaosave + tam < ultimaPosiArq) && (contador <= idproc)) {
-              arq.seek(posicaosave);
-              int converlt = (int) posicaosave;
-              posicaosave = (long) tam + converlt;
-              arq.seek(posicaosave);
-
-              posicaoRetorno = arq.getFilePointer();
-              tam = arq.readInt();
-              posicaosave = arq.getFilePointer();
-              idlido = arq.readShort();
-
-            } else {
-
-              if (idencontrado == false) {
-                idnexiste = true;
-              }
-
-            }
-
-            contador++;
-
+            esq = mid + 1;
+          } else {
+            dir = mid - 1;
           }
-        } else {
-          System.out.println("O Arquivo está Vazio, nada para ser Procurado !");
         }
-        arq.close();
-      } catch (Exception e) {
-        String erro = e.getMessage();
-
-        if (erro.contains("No such file or directory")) {
-
-          System.out.println("Diretório do arquivo não encontrado ! ERROR: " + e.getMessage());
-          return -10;
-        }
+      } else {
+        System.out.println("ERROR: O arquivo de busca se encontra vazio !");
+        posicaoRetorno = -10;
       }
 
-    } else {
+      arq.close();
 
-      try {
-        arq = new RandomAccessFile("src/database/futebol.db", "rw");
+    } catch (Exception e) {
+      String erro = e.getMessage();
 
-        testeArquivoVazio = arq.length();
+      if (erro.contains("No such file or directory")) {
 
-        if (testeArquivoVazio != 0) {
-
-          long tamTotalArq = arq.length();
-          long posiI;
-          long saveLapide;
-          long posiMudar;
-          Boolean estouro = false;
-          arq.seek(2);
-          posicaoRetorno = arq.getFilePointer();
-          int tamRegistro = arq.readInt();
-          posiI = arq.getFilePointer();
-          arq.seek(arq.getFilePointer() + 2);
-          saveLapide = arq.getFilePointer();
-          arq.seek(saveLapide + 3);
-          String nomeR = arq.readUTF();
-          // arq.seek(posiI);
-
-          while (estouro == false) {
-
-            if (entrada.equals(nomeR) == true) {
-              idencontrado = true;
-              arq.seek(saveLapide);
-              lapide = arq.readUTF();
-              if (lapide.equals(" ")) {
-                idDeletado = false;
-                estouro = true;
-              } else {
-                idDeletado = true;
-              }
-            } else {
-              idDeletado = true;
-            }
-
-            if (posiI + tamRegistro < tamTotalArq && (idDeletado != false) && (estouro == false)) {
-              posiMudar = (long) tamRegistro;
-              arq.seek(posiMudar + posiI);
-              posicaoRetorno = arq.getFilePointer();
-              tamRegistro = arq.readInt();
-              posiI = arq.getFilePointer();
-              arq.seek(arq.getFilePointer() + 2);
-              saveLapide = arq.getFilePointer();
-              arq.seek(saveLapide + 3);
-              nomeR = arq.readUTF();
-              arq.seek(posiI);
-            } else {
-              estouro = true;
-            }
-
-          }
-
-        } else {
-          System.out.println("O Arquivo está Vazio, nada para ser Procurado !");
-        }
-        arq.close();
-      } catch (Exception e) {
-        String erro = e.getMessage();
-
-        if (erro.contains("No such file or directory")) {
-
-          System.out.println("Diretório do arquivo não encontrado ! ERROR: " + e.getMessage());
-          return -10;
-        }
+        System.out.println("(PB) Diretório do arquivo não encontrado ! ERROR: " + e.getMessage());
+        return -10;
+      } else {
+        System.out.println("ERROR: " + erro);
+        return -10;
       }
-
-    }
-
-    if (idDeletado == true || idencontrado == false || idnexiste == true) {
-      posicaoRetorno = -1;
     }
 
     return posicaoRetorno;
@@ -326,13 +218,8 @@ public class arquivocrud {
   }
 
   // --------------------------------------
-  // Método procurar clube, tem como parametro uma string e o objeto ft2, ele
-  // recebe o nome ou ID a ser procurado e para ser atribuido ao ft2, mas antes
-  // ele chama o método pesquisarNoArquivo, que retorna um long que é a posição do
-  // primeiro byte de onde começa o Tam do arquivo do registro procurado, se o
-  // long for -1 o arquivo procurado não existe e se o long for -10 é que deu erro
-  // na pesquisa e esse método retorna essa posição do arquivo para indicar se foi
-  // ou não achado o registro no arquivo
+  // COMENTA NOVAMENTE PROCURAR CLUBE POIS FOI FUNDIDO COM O METODO
+  // pesquisarNoArquivo
   // --------------------------------------
 
   public long procurarClube(String recebendo, fut ft2) {
@@ -343,40 +230,56 @@ public class arquivocrud {
      * ARRAYDEBYTE(ID+LAPIDE+NOME+CNPJ+CIDADE+PARTIDASJOGADAS+PONTOS)
      */
     // Escrita no Arquivo
+    long retornoPesquisa = -1;
+    boolean idOrnot = recebendo.matches("-?\\d+");
+    String lapide = "*";
 
-    long retornoPesquisa = pesquisarNoArquivo(recebendo);
-    byte[] ba;
-    RandomAccessFile arq;
+    if (idOrnot == true) {// Inicio Pesquisa Númerica
 
-    if (retornoPesquisa >= 0) {
+      int entradaInt = Integer.parseInt(recebendo);
+      retornoPesquisa = pesquisaBinariaArquivoIndice(entradaInt);// chama a pesquisa binária
 
-      try {
-        arq = new RandomAccessFile("src/database/futebol.db", "rw");
-        arq.seek(retornoPesquisa);
-        int tamRegistro = arq.readInt();
-        ba = new byte[tamRegistro];
-        arq.read(ba);
-        ft2.fromByteArray(ba);
+      byte[] ba;
+      RandomAccessFile arq;
 
-      } catch (Exception e) {
-        String erro = e.getMessage();
+      if (retornoPesquisa >= 0) {
 
-        if (erro.contains("No such file or directory")) {
+        try {
+          arq = new RandomAccessFile("src/database/futebol.db", "rw");
+          arq.seek(retornoPesquisa + 6);
+          String lapideLida = arq.readUTF();
 
-          System.out.println("\nDiretório do arquivo não encontrado ! ERROR: " + e.getMessage());
-          return -10;
-        } else {
-          System.out.println("ERROR: " + e.getMessage());
+          if (!(lapideLida.equals(lapide))) {
+
+            arq.seek(retornoPesquisa);
+            int tamRegistro = arq.readInt();
+            ba = new byte[tamRegistro];
+            arq.read(ba);
+            ft2.fromByteArray(ba);
+          } else {
+            retornoPesquisa = -1;
+          }
+
+        } catch (Exception e) {
+          String erro = e.getMessage();
+
+          if (erro.contains("No such file or directory")) {
+
+            System.out.println("\nDiretório do arquivo não encontrado ! ERROR: " + e.getMessage());
+            return -10;
+          } else {
+            System.out.println("ERROR: " + e.getMessage());
+            return -10;
+          }
+        }
+      } else {
+        if (retornoPesquisa == -1) {
+
+          System.out.println("\nRegistro Pesquisado não encontrado !\n");
+
         }
       }
-    } else {
-      if (retornoPesquisa == -1) {
-
-        System.out.println("\nRegistro Pesquisado não encontrado !\n");
-
-      }
-    }
-
+    } // aqui provavelmente vai ter que ser implementado a lista invertida.
     return retornoPesquisa;
   }
 
