@@ -1,6 +1,5 @@
 import java.util.Scanner;
 import java.io.RandomAccessFile;
-
 import java.io.PrintWriter;
 
 public class arquivocrud {
@@ -34,14 +33,48 @@ public class arquivocrud {
   // --------------------------------------
   public void escreverIndice(long posicao, short id) {
 
+    // 0------10--------20-------30-------40------50
+    // 1 0 3 2 4
+    // os indices sao invertidos para o ordenacao fazer efeito se nao, nao teria
+    // sentido fazer a ordenação.
+
     try {
 
       RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
 
-      long tamArq = arq.length();
-      arq.seek(tamArq);
-      arq.writeShort(id);
-      arq.writeLong(posicao);
+      long tamdoArq = arq.length();
+
+      if (tamdoArq == 0) {
+
+        tamdoArq = 10;
+        arq.seek(tamdoArq);
+        arq.writeShort(id);
+        arq.writeLong(posicao);
+
+      } else {
+        boolean ePar = true;
+        if ((id) % 2 == 1) {
+          ePar = false;
+        }
+
+        if (ePar) {
+          arq.seek(tamdoArq + 10);
+          arq.writeShort(id);
+          arq.writeLong(posicao);
+        } else {
+          arq.seek(tamdoArq - 20);
+          System.out.println(arq.getFilePointer());
+          arq.writeShort(id);
+          arq.writeLong(posicao);
+        }
+
+      }
+      /*
+       * para salvar o indice sequencialmente de forma crescente
+       * arq.seek(tamdoArq);
+       * arq.writeShort(id);
+       * arq.writeLong(posicao);
+       */
 
       arq.close();
 
