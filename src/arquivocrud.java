@@ -1,6 +1,6 @@
-//Versão 0.2
-//NOVAS --> Realiza embaralhamento da escrita no indice
-//Falta --> Fazer a classe do Indice e Colocar Lapide nos indices.
+//Versão 0.3
+//NOVAS --> Realiza embaralhamento da escrita no indice na classe indice com lapide
+//Falta --> Ordenação Externa
 
 import java.util.Scanner;
 import java.io.RandomAccessFile;
@@ -28,71 +28,6 @@ public class arquivocrud {
 
   }
 
-  // -------------------Create---------------------------------//
-  // --------------------------------------
-  // Método escreverIndice, faz a lista de indices e sua respectiva posicao no
-  // arquivo que é um número long
-  // ESCREVE SHORT + LONG = 10 BYTES POR ESCRITA
-  // --------------------------------------
-  public void escreverIndice(long posicao, short id) {
-
-    // 0------10--------20-------30-------40------50
-    // 1 0 3 2 4
-    // os indices sao invertidos para o ordenacao fazer efeito se nao, nao teria
-    // sentido fazer a ordenação.
-
-    try {
-
-      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
-
-      long tamdoArq = arq.length();
-
-      if (tamdoArq == 0) {
-
-        tamdoArq = 10;
-        arq.seek(tamdoArq);
-        arq.writeShort(id);
-        arq.writeLong(posicao);
-
-      } else {
-        boolean ePar = true;
-        if ((id) % 2 == 1) {
-          ePar = false;
-        }
-
-        if (ePar) {
-          arq.seek(tamdoArq + 10);
-          arq.writeShort(id);
-          arq.writeLong(posicao);
-        } else {
-          arq.seek(tamdoArq - 20);
-          System.out.println(arq.getFilePointer());
-          arq.writeShort(id);
-          arq.writeLong(posicao);
-        }
-
-      }
-      /*
-       * para salvar o indice sequencialmente de forma crescente
-       * arq.seek(tamdoArq);
-       * arq.writeShort(id);
-       * arq.writeLong(posicao);
-       */
-
-      arq.close();
-
-    } catch (Exception e) {
-      String erro = e.getMessage();
-
-      if (erro.contains("No such file or directory")) {
-
-        System.out.println("Diretório do arquivo não encontrado !");
-        return;
-      }
-    }
-
-  }
-
   // --------------------------------------
   // Método escreverArquivo, esse método recebe o objeto ft com os dados ja
   // atribuidos a cada atributo, ele vai pegar qual vai ser o ID atribuido a esse
@@ -114,6 +49,7 @@ public class arquivocrud {
     try {
       // verificarArquivo("dados/futebol.db");
       short idcabecalhosave = 0;
+      indice ic = new indice();
       arq = new RandomAccessFile("src/database/futebol.db", "rw");
 
       if (arq.length() == 0) {
@@ -138,7 +74,10 @@ public class arquivocrud {
       arq.writeInt(ba.length);
       arq.write(ba);
 
-      escreverIndice(posiIndice, idcabecalhosave);
+      // local que faz a escrita no arquivo
+      ic.setIdIndice(idcabecalhosave);
+      ic.setPosiIndice(posiIndice);
+      ic.writeIndicetoArq();
 
     } catch (Exception e) {
       String erro = e.getMessage();
