@@ -1,6 +1,7 @@
-# Detalhes da Branch VSI_0.2 (EX WORKING)
+# Detalhes da Branch VSI_0.2 - WORKING
 
 - Nesta branch foi trabalho sempre, agora virou bkp do código feito até a versão 0.2
+- Essa branch era a antiga working que foi deletada.
 
 ## Melhorias
 
