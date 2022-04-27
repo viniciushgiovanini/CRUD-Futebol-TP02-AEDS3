@@ -1,10 +1,13 @@
+//Versão 0.2
+//NOVAS --> Realiza embaralhamento da escrita no indice
+//Falta --> Fazer a classe do Indice e Colocar Lapide nos indices.
+
 import java.util.Scanner;
 import java.io.RandomAccessFile;
 import java.io.PrintWriter;
 
 public class arquivocrud {
 
-  // -------------------FUNCAO-PARA-TESTAR-O-ARQUIVO----------------//
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
