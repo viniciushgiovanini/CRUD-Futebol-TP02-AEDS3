@@ -1,11 +1,12 @@
+//VERSAO 0.1
+//Essa versão realiza somente a escrita em indices e busca de maneira sequencial.
+
 import java.util.Scanner;
 import java.io.RandomAccessFile;
-
 import java.io.PrintWriter;
 
 public class arquivocrud {
 
-  // -------------------FUNCAO-PARA-TESTAR-O-ARQUIVO----------------//
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
