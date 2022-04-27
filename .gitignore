@@ -1,4 +1,4 @@
 .vscode/
 test/
-aindices.db
-futebol.db
+src/database/aindices.db
+src/database/futebol.db
