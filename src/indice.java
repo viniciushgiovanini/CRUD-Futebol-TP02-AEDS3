@@ -108,4 +108,34 @@ public class indice {
 
   }
 
+  public static void swap(int[] a, int posi1, int posi2) {
+
+    int vTemp = a[posi1];
+    a[posi1] = a[posi2];
+    a[posi2] = vTemp;
+
+  }
+
+  public static void quicksort(int[] array, int esq, int dir) {
+
+    int i = esq, j = dir;
+    int pivo = array[(dir + esq) / 2];
+    while (i <= j) {
+      while (array[i] < pivo)
+        i++;
+      while (array[j] > pivo)
+        j--;
+      if (i <= j) {
+        swap(array, i, j);
+        i++;
+        j--;
+      }
+    }
+    if (esq < j)
+      quicksort(array, esq, j);
+    if (i < dir)
+      quicksort(array, i, dir);
+
+  }
+
 }
