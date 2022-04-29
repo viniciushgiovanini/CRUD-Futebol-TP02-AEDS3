@@ -1,4 +1,4 @@
-import java.io.RandomAccessFile;
+import java.io.*;
 
 public class indice {
   private Short idIndice;
@@ -12,9 +12,9 @@ public class indice {
 
   }
 
-  public indice(Short id, long posicao) {
+  public indice(Short id, long posicao, String lapide) {
 
-    lapide = " ";
+    this.lapide = lapide;
     idIndice = id;
     posiIndice = posicao;
 
@@ -108,34 +108,56 @@ public class indice {
 
   }
 
-  public static void swap(int[] a, int posi1, int posi2) {
+  public static void swapIndice(indice[] a, int posi1, int posi2) {
+    indice vTemp[] = new indice[1];
 
-    int vTemp = a[posi1];
+    vTemp[0] = a[posi1];
     a[posi1] = a[posi2];
-    a[posi2] = vTemp;
+    a[posi2] = vTemp[0];
 
   }
 
-  public static void quicksort(int[] array, int esq, int dir) {
+  public void quicksortIndice(indice[] array, int esq, int dir) {
 
     int i = esq, j = dir;
-    int pivo = array[(dir + esq) / 2];
+    int pivo = array[(dir + esq) / 2].idIndice;
     while (i <= j) {
-      while (array[i] < pivo)
+      while (array[i].idIndice < pivo)
         i++;
-      while (array[j] > pivo)
+      while (array[j].idIndice > pivo)
         j--;
       if (i <= j) {
-        swap(array, i, j);
+        swapIndice(array, i, j);
         i++;
         j--;
       }
     }
     if (esq < j)
-      quicksort(array, esq, j);
+      quicksortIndice(array, esq, j);
     if (i < dir)
-      quicksort(array, i, dir);
+      quicksortIndice(array, i, dir);
 
   }
 
+  public byte[] toByteArray(indice[] ic, int qtdX) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+    try {
+
+      int contador = 0;
+
+      while (contador < qtdX) {
+        dos.writeShort(ic[contador].idIndice);
+        dos.writeLong(ic[contador].posiIndice);
+        dos.writeUTF(ic[contador].lapide);
+        contador++;
+      }
+
+    } catch (Exception e) {
+      String error = e.getMessage();
+      System.out.println("Mensagem de error: " + error);
+
+    }
+    return baos.toByteArray();
+  }
 }

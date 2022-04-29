@@ -2,14 +2,14 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.3]
+## Melhorias Versão [0.4]
 
-- Agora o programa tem a classe de Indice, escreve no arquivo SHORT (ID) POSICAO NO ARQUIVO DE DADOS (LONG) LAPIDE (STRING)
+- O programa realiza a primeira etapa da ordenação externa, separando os 10 primeiros indices em um array de objeto, e mandando para o quicksort voltando ordenado e salvando ele no ARQ1, de 10 em 10.
 
 ## Pioras
 
-- O metodo de busca parou de funcionar pois só faz busca em elementos ordenados
+- Ele só faz a pesquisa no quicksort e o salvamento no arq1 quando tem 10 elementos no array de objeto indice.
 
 ## Próximos Passos
 
-- Ordenação Externa.
+- Ordenacao externa incompleta.

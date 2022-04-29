@@ -1,4 +1,4 @@
-//Versão 0.3
+//Versão 0.4
 //NOVAS --> Realiza embaralhamento da escrita no indice na classe indice com lapide
 //Falta --> Ordenação Externa
 
@@ -15,12 +15,18 @@ public class arquivocrud {
 
     try {
 
-      PrintWriter writer = new PrintWriter("src/database/futebol.db");
-      PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
-      writer.print("");
-      writer.close();
-      writer2.print("");
-      writer2.close();
+      // PrintWriter writer = new PrintWriter("src/database/futebol.db");
+      // PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
+      PrintWriter writer3 = new PrintWriter("src/database/arq1.db");
+      PrintWriter writer4 = new PrintWriter("src/database/arq2.db");
+      // writer.print("");
+      // writer.close();
+      // writer2.print("");
+      // writer2.close();
+      writer3.print("");
+      writer3.close();
+      writer4.print("");
+      writer4.close();
 
     } catch (Exception e) {
       System.out.println("ERRO NO DELETA TUDO");
@@ -130,6 +136,79 @@ public class arquivocrud {
   // -------------------Create - FIM---------------------------------//
 
   // ----------------------READ-------------------------//
+
+  public static void ordernarInter() {
+    // falta pegar 10 registros botar no arq1 pegar mais 10 no arq 2 intercalando
+    // ate acabar
+    // depois fazer a ordenacao em 2 arquivos.
+
+    try {
+
+      RandomAccessFile arq1 = new RandomAccessFile("src/database/arq1.db", "rw");
+      RandomAccessFile arq2 = new RandomAccessFile("src/database/arq2.db", "rw");
+      RandomAccessFile arqI = new RandomAccessFile("src/database/aindices.db", "rw");
+
+      long tamArquivoIndice = arqI.length();
+      int inteirotamArquivoIndice = (int) tamArquivoIndice;
+
+      indice indiceArray[];
+      indiceArray = new indice[10];
+
+      int contadorParaSalvarNoArquivo1 = 0;
+      int contadorArrayIndice = 0;
+      int contadorPrincipal = 0;
+      inteirotamArquivoIndice /= 13;
+
+      while (contadorPrincipal < inteirotamArquivoIndice && arqI != null) {
+
+        indice ic = new indice();
+        Short idIndiceAD = arqI.readShort();
+        Long posiIndiceAD = arqI.readLong();
+        String lapideAD = arqI.readUTF();
+        ic.setIdIndice(idIndiceAD);
+        ic.setPosiIndice(posiIndiceAD);
+        ic.setLapide(lapideAD);
+        indiceArray[contadorArrayIndice] = ic;
+
+        if (contadorParaSalvarNoArquivo1 == 9) {
+
+          ic.quicksortIndice(indiceArray, 0, indiceArray.length - 1);
+
+          byte[] retornoByteArray;
+          retornoByteArray = ic.toByteArray(indiceArray, 10);
+          arq1.write(retornoByteArray);
+          indiceArray = new indice[10];
+          contadorArrayIndice = -1;
+
+        } else {
+          if (contadorParaSalvarNoArquivo1 == 19) {
+            ic.quicksortIndice(indiceArray, 0, indiceArray.length - 1);
+
+            byte[] retornoByteArray2;
+            retornoByteArray2 = ic.toByteArray(indiceArray, 10);
+            arq1.write(retornoByteArray2);
+            indiceArray = new indice[10];
+            contadorParaSalvarNoArquivo1 = -1;
+            contadorArrayIndice = -1;
+          }
+        }
+
+        contadorParaSalvarNoArquivo1++;
+        contadorArrayIndice++;
+      }
+
+      arqI.close();
+      arq1.close();
+      arq2.close();
+
+    } catch (Exception e) {
+      String error = e.getMessage();
+      System.out.println("Mensagem de Erro: " + error);
+      return;
+    }
+
+  }
+
   // --------------------------------------
   // Método pesquisaBinariaArquivoIndice faz a busca binaria no arquivo de
   // indices, dessa forma retornando a posicao long no arquivo de dados, e logo
@@ -210,7 +289,7 @@ public class arquivocrud {
     String lapide = "*";
 
     if (idOrnot == true) {// Inicio Pesquisa Númerica
-
+      ordernarInter();
       int entradaInt = Integer.parseInt(recebendo);
       retornoPesquisa = pesquisaBinariaArquivoIndice(entradaInt);// chama a pesquisa binária
 
