@@ -15,14 +15,14 @@ public class arquivocrud {
 
     try {
 
-      // PrintWriter writer = new PrintWriter("src/database/futebol.db");
-      // PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
+      PrintWriter writer = new PrintWriter("src/database/futebol.db");
+      PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
       PrintWriter writer3 = new PrintWriter("src/database/arq1.db");
       PrintWriter writer4 = new PrintWriter("src/database/arq2.db");
-      // writer.print("");
-      // writer.close();
-      // writer2.print("");
-      // writer2.close();
+      writer.print("");
+      writer.close();
+      writer2.print("");
+      writer2.close();
       writer3.print("");
       writer3.close();
       writer4.print("");
@@ -159,7 +159,7 @@ public class arquivocrud {
       int contadorPrincipal = 0;
       inteirotamArquivoIndice /= 13;
 
-      while (contadorPrincipal < inteirotamArquivoIndice && arqI != null) {
+      while (contadorPrincipal < inteirotamArquivoIndice) {
 
         indice ic = new indice();
         Short idIndiceAD = arqI.readShort();
@@ -170,7 +170,7 @@ public class arquivocrud {
         ic.setLapide(lapideAD);
         indiceArray[contadorArrayIndice] = ic;
 
-        if (contadorParaSalvarNoArquivo1 == 9) {
+        if (contadorParaSalvarNoArquivo1 == 9 || contadorPrincipal == ((tamArquivoIndice / 13) - 1)) {
 
           ic.quicksortIndice(indiceArray, 0, indiceArray.length - 1);
 
@@ -195,6 +195,7 @@ public class arquivocrud {
 
         contadorParaSalvarNoArquivo1++;
         contadorArrayIndice++;
+        contadorPrincipal++;
       }
 
       arqI.close();
