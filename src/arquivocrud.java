@@ -142,6 +142,10 @@ public class arquivocrud {
     // ate acabar
     // depois fazer a ordenacao em 2 arquivos.
 
+    /*
+     * fazer o teste se o codigo está com gap de 0
+     */
+
     try {
 
       RandomAccessFile arq1 = new RandomAccessFile("src/database/arq1.db", "rw");
