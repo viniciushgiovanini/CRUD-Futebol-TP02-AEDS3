@@ -137,14 +137,68 @@ public class arquivocrud {
 
   // ----------------------READ-------------------------//
 
+  public static int qtdElementoArrayIndice(indice[] a) {
+    int contador = 0;
+
+    for (int i = 0; i < a.length; i++) {
+
+      if (a[i] != null) {
+        contador++;
+      }
+
+    }
+    return contador;
+  }
+
+  public static boolean corrigirArquivoIndice() {
+
+    boolean eImpar = false;
+    // funcao tem objetivo de tirar o gap de 0 entre os registros
+    try {
+
+      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
+
+      if (arq.length() > 13) {
+
+        arq.seek(arq.length() - 24);
+
+        long lerLong = arq.readLong();
+
+        byte[] zerar = new byte[12];
+        if (lerLong == 0) {
+
+          indice indd = new indice();
+          arq.seek(arq.length() - 13);
+          indd.setIdIndice(arq.readShort());
+          indd.setPosiIndice(arq.readLong());
+          indd.setLapide(arq.readUTF());
+
+          arq.seek(arq.length() - 26);
+
+          arq.writeShort(indd.getIdIndice());
+          arq.writeLong(indd.getPosiIndice());
+          arq.writeUTF(indd.getLapide());
+
+          arq.seek((arq.length() - 12));
+          arq.write(zerar);
+          eImpar = true;
+        }
+
+      }
+
+      arq.close();
+
+    } catch (Exception e) {
+      System.out.println("Aconteceu um error ao corrigir o arquivo de dados: " + e.getMessage());
+    }
+    return eImpar;
+  }
+
   public static void ordernarInter() {
     // falta pegar 10 registros botar no arq1 pegar mais 10 no arq 2 intercalando
     // ate acabar
     // depois fazer a ordenacao em 2 arquivos.
-
-    /*
-     * fazer o teste se o codigo está com gap de 0
-     */
+    boolean eImpar = corrigirArquivoIndice();
 
     try {
 
@@ -162,44 +216,62 @@ public class arquivocrud {
       int contadorArrayIndice = 0;
       int contadorPrincipal = 0;
       inteirotamArquivoIndice /= 13;
+      int inteirotamArquivoIndice2 = inteirotamArquivoIndice;
 
-      while (contadorPrincipal < inteirotamArquivoIndice) {
+      if (eImpar) {
+        inteirotamArquivoIndice2 -= 2;
+      } else {
+        inteirotamArquivoIndice2 -= 1;
+      }
 
-        indice ic = new indice();
-        Short idIndiceAD = arqI.readShort();
-        Long posiIndiceAD = arqI.readLong();
-        String lapideAD = arqI.readUTF();
-        ic.setIdIndice(idIndiceAD);
-        ic.setPosiIndice(posiIndiceAD);
-        ic.setLapide(lapideAD);
-        indiceArray[contadorArrayIndice] = ic;
+      if (inteirotamArquivoIndice != 0) {
 
-        if (contadorParaSalvarNoArquivo1 == 9 || contadorPrincipal == ((tamArquivoIndice / 13) - 1)) {
+        while (contadorPrincipal < inteirotamArquivoIndice) {
 
-          ic.quicksortIndice(indiceArray, 0, indiceArray.length - 1);
+          Short idIndiceAD = arqI.readShort();
+          indice ic = new indice();
+          Long posiIndiceAD = arqI.readLong();
+          String lapideAD = arqI.readUTF();
+          ic.setIdIndice(idIndiceAD);
+          ic.setPosiIndice(posiIndiceAD);
+          ic.setLapide(lapideAD);
+          indiceArray[contadorArrayIndice] = ic;
 
-          byte[] retornoByteArray;
-          retornoByteArray = ic.toByteArray(indiceArray, 10);
-          arq1.write(retornoByteArray);
-          indiceArray = new indice[10];
-          contadorArrayIndice = -1;
+          int qtdElementosPresente = qtdElementoArrayIndice(indiceArray);
+          if (contadorParaSalvarNoArquivo1 == 9 || contadorPrincipal == inteirotamArquivoIndice2) {
 
-        } else {
-          if (contadorParaSalvarNoArquivo1 == 19) {
-            ic.quicksortIndice(indiceArray, 0, indiceArray.length - 1);
+            if ((inteirotamArquivoIndice == inteirotamArquivoIndice2 + 1) && (contadorParaSalvarNoArquivo1 != 9)) {
+              inteirotamArquivoIndice = inteirotamArquivoIndice2;
+            } // precisa testar com o segundo caminho incompleto e com ele cheio.
 
-            byte[] retornoByteArray2;
-            retornoByteArray2 = ic.toByteArray(indiceArray, 10);
-            arq1.write(retornoByteArray2);
+            ic.quicksortIndice(indiceArray, 0, qtdElementosPresente - 1);
+
+            byte[] retornoByteArray;
+            retornoByteArray = ic.toByteArray(indiceArray, qtdElementosPresente);
+            arq1.write(retornoByteArray);
             indiceArray = new indice[10];
-            contadorParaSalvarNoArquivo1 = -1;
             contadorArrayIndice = -1;
-          }
-        }
 
-        contadorParaSalvarNoArquivo1++;
-        contadorArrayIndice++;
-        contadorPrincipal++;
+          } else {
+            if (contadorParaSalvarNoArquivo1 == 19) {// Fazer teste novamente com os 2 caminhos full esse bloco ta não
+                                                     // funcional
+
+              ic.quicksortIndice(indiceArray, 0, qtdElementosPresente - 1);
+
+              byte[] retornoByteArray2;
+              retornoByteArray2 = ic.toByteArray(indiceArray, qtdElementosPresente);
+              arq1.write(retornoByteArray2);
+              indiceArray = new indice[10];
+              contadorParaSalvarNoArquivo1 = -1;
+              contadorArrayIndice = -1;
+            }
+          }
+
+          contadorParaSalvarNoArquivo1++;
+          contadorArrayIndice++;
+          contadorPrincipal++;
+
+        }
       }
 
       arqI.close();
