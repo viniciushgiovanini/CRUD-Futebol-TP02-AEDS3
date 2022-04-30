@@ -1,6 +1,3 @@
-//Versão 0.4
-//NOVAS --> Realiza embaralhamento da escrita no indice na classe indice com lapide
-//Falta --> Ordenação Externa
 
 import java.util.Scanner;
 import java.io.RandomAccessFile;
@@ -138,6 +135,9 @@ public class arquivocrud {
   // ----------------------READ-------------------------//
 
   public static int qtdElementoArrayIndice(indice[] a) {
+    // essa funcao pega a quantidade de elementos presente no array de objeto
+    // indice, foi construida com o objetivo de gerar o número do elemento mais a
+    // direita quando o vetor não está completo
     int contador = 0;
 
     for (int i = 0; i < a.length; i++) {
@@ -152,6 +152,18 @@ public class arquivocrud {
 
   public static boolean corrigirArquivoIndice() {
 
+    // 0_________1___"0"____2________3_________4
+    // Para embaralhar e a ordenacao fazer sentido eu mudei a ordem de escrita,
+    // então se escreve primeiros números impares e depois numeros pares, porém já
+    // que sempre gera o indice par primeiro ele salva 13 posicao na frente da posi
+    // 0
+    // para deixar o espaço para o numero par, porém quando fica um número impar de
+    // elementos como no exemplo acima, fica um espaço de 0 no meio do arquivo, essa
+    // funcao copia o ultimo registro para esse espaço e deixa o 0 pro fim do
+    // arquivo, porém ainda continua com o 0, e ela retorna um boolean para o método
+    // de ordenacao, para ele saber, quando ele deve ignorar as ultimas 13 casas que
+    // seria um registro zerado (quando for impar), e quando ele considera esses 13
+    // bytes finais (quando o número de elementos no arquivo for par).
     boolean eImpar = false;
     // funcao tem objetivo de tirar o gap de 0 entre os registros
     try {
@@ -194,11 +206,12 @@ public class arquivocrud {
     return eImpar;
   }
 
-  public static void ordernarInter() {
-    // falta pegar 10 registros botar no arq1 pegar mais 10 no arq 2 intercalando
-    // ate acabar
-    // depois fazer a ordenacao em 2 arquivos.
-    boolean eImpar = corrigirArquivoIndice();
+  public static void ordernarInter() {// Essa funcao está pegando 10 registros em 10 porem salvando no msm arquivo que
+    // é o arq 1, tem que intercalar pegou 10 arq 1 + 10 arq 2 + 10 arq2
+
+    boolean eImpar = corrigirArquivoIndice();// essa funcao tem o objetivo de pegar o arquivo e ver se ele esta com a
+                                             // quantidade de registros pares ou impares e corrigir o embaralhamento do
+                                             // 0 caso seja impar para fazer a ordenacao
 
     try {
 
@@ -207,18 +220,20 @@ public class arquivocrud {
       RandomAccessFile arqI = new RandomAccessFile("src/database/aindices.db", "rw");
 
       long tamArquivoIndice = arqI.length();
-      int inteirotamArquivoIndice = (int) tamArquivoIndice;
+      int inteirotamArquivoIndice = (int) tamArquivoIndice;// tamanho total do arquivo
 
       indice indiceArray[];
-      indiceArray = new indice[10];
+      indiceArray = new indice[10];// abri 10 casas de array do objeto indice
 
       int contadorParaSalvarNoArquivo1 = 0;
       int contadorArrayIndice = 0;
       int contadorPrincipal = 0;
-      inteirotamArquivoIndice /= 13;
+      inteirotamArquivoIndice /= 13;// para pegar a qtd de elementos no arquivo (sem considerar a correcao do 0)
       int inteirotamArquivoIndice2 = inteirotamArquivoIndice;
 
-      if (eImpar) {
+      if (eImpar) {// caso a correcao indentifique que os ultimos registros não sao vazios ele
+                   // retira 1 valor do tamanho do arquivo, o valor adicionado pelo contador, caso
+                   // seja impar ele retira o valor referente ao contador + a correcao de 0
         inteirotamArquivoIndice2 -= 2;
       } else {
         inteirotamArquivoIndice2 -= 1;
@@ -226,7 +241,11 @@ public class arquivocrud {
 
       if (inteirotamArquivoIndice != 0) {
 
-        while (contadorPrincipal < inteirotamArquivoIndice) {
+        while (contadorPrincipal < inteirotamArquivoIndice) {// nao foi retirado o -1 da variavel
+                                                             // inteirotamArquivoIndice, pois ela faz o número correto
+                                                             // de loops em relacao ao tamanho do arquivo, caso seja
+                                                             // necessário um encerramento antes, ele entra no if logo
+                                                             // apos o qtdElementosPresentes
 
           Short idIndiceAD = arqI.readShort();
           indice ic = new indice();
@@ -237,14 +256,29 @@ public class arquivocrud {
           ic.setLapide(lapideAD);
           indiceArray[contadorArrayIndice] = ic;
 
-          int qtdElementosPresente = qtdElementoArrayIndice(indiceArray);
-          if (contadorParaSalvarNoArquivo1 == 9 || contadorPrincipal == inteirotamArquivoIndice2) {
+          if (contadorParaSalvarNoArquivo1 == 9 || contadorPrincipal == inteirotamArquivoIndice2
+              || contadorParaSalvarNoArquivo1 == 19) {// aqui ele testa, se for 9 é que o array indice esta cheio, entao
+                                                      // ele ordena e salva, caso for 19 é que o 2 array de indice esta
+                                                      // cheio, e se contadorPrincipal = inteirotamArquivo, consiste que
+                                                      // chegou no final do arquivo
 
-            if ((inteirotamArquivoIndice == inteirotamArquivoIndice2 + 1) && (contadorParaSalvarNoArquivo1 != 9)) {
+            int qtdElementosPresente = qtdElementoArrayIndice(indiceArray);
+            if ((contadorPrincipal == inteirotamArquivoIndice2) && (contadorParaSalvarNoArquivo1 != 9)
+                && (contadorParaSalvarNoArquivo1 != 19)) {// quando o contador for != 9 e != 19 mas igual ao tamanho do
+                                                          // arquivo ele ordena e encerra
               inteirotamArquivoIndice = inteirotamArquivoIndice2;
             } // precisa testar com o segundo caminho incompleto e com ele cheio.
 
-            ic.quicksortIndice(indiceArray, 0, qtdElementosPresente - 1);
+            if (qtdElementosPresente != 1) {// ordenacao só quando tiver + de 1 elemento
+              ic.quicksortIndice(indiceArray, 0, qtdElementosPresente - 1);
+            }
+
+            if (contadorParaSalvarNoArquivo1 == 19) {// quando chegar em 19 ele restaura o contador, pois esse contador
+                                                     // que sabe caso o array de indice fique cheio. Quando ele da 2
+                                                     // volta completas ele reseta para - 1 pois ja vai fazer um ++
+                                                     // antes de ler, então para comecar de 0
+              contadorParaSalvarNoArquivo1 = -1;
+            }
 
             byte[] retornoByteArray;
             retornoByteArray = ic.toByteArray(indiceArray, qtdElementosPresente);
@@ -252,19 +286,6 @@ public class arquivocrud {
             indiceArray = new indice[10];
             contadorArrayIndice = -1;
 
-          } else {
-            if (contadorParaSalvarNoArquivo1 == 19) {// Fazer teste novamente com os 2 caminhos full esse bloco ta não
-                                                     // funcional
-
-              ic.quicksortIndice(indiceArray, 0, qtdElementosPresente - 1);
-
-              byte[] retornoByteArray2;
-              retornoByteArray2 = ic.toByteArray(indiceArray, qtdElementosPresente);
-              arq1.write(retornoByteArray2);
-              indiceArray = new indice[10];
-              contadorParaSalvarNoArquivo1 = -1;
-              contadorArrayIndice = -1;
-            }
           }
 
           contadorParaSalvarNoArquivo1++;
