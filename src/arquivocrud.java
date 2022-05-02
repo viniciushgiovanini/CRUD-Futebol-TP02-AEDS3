@@ -273,18 +273,29 @@ public class arquivocrud {
               ic.quicksortIndice(indiceArray, 0, qtdElementosPresente - 1);
             }
 
-            if (contadorParaSalvarNoArquivo1 == 19) {// quando chegar em 19 ele restaura o contador, pois esse contador
-                                                     // que sabe caso o array de indice fique cheio. Quando ele da 2
-                                                     // volta completas ele reseta para - 1 pois ja vai fazer um ++
-                                                     // antes de ler, então para comecar de 0
-              contadorParaSalvarNoArquivo1 = -1;
-            }
-
             byte[] retornoByteArray;
             retornoByteArray = ic.toByteArray(indiceArray, qtdElementosPresente);
-            arq1.write(retornoByteArray);
             indiceArray = new indice[10];
             contadorArrayIndice = -1;
+
+            if (contadorParaSalvarNoArquivo1 >= 0 && contadorParaSalvarNoArquivo1 <= 9) {
+              long ultimaPosidoArq1 = arq1.length();
+              arq1.seek(ultimaPosidoArq1);
+              arq1.write(retornoByteArray);
+            }
+
+            if (contadorParaSalvarNoArquivo1 > 9 && contadorParaSalvarNoArquivo1 < 20) {
+              long ultimaPosidoArq2 = arq2.length();
+              arq2.seek(ultimaPosidoArq2);
+              arq2.write(retornoByteArray);
+            }
+
+            if (contadorParaSalvarNoArquivo1 == 19) {// quando chegar em 19 ele restaura o contador, pois esse contador
+              // que sabe caso o array de indice fique cheio. Quando ele da 2
+              // volta completas ele reseta para - 1 pois ja vai fazer um ++
+              // antes de ler, então para comecar de 0
+              contadorParaSalvarNoArquivo1 = -1;
+            }
 
           }
 

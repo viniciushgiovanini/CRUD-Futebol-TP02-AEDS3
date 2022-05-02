@@ -2,13 +2,14 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.4.5]
+## Melhorias Versão [0.4.6]
 
-- O programa realiza a ordenacao externa, falta agora fazer o final da ordenacao, que é pegar o registro dos 2 arquivos diferentes, e fazer a comparação entre eles.  
-- A versão atual está salvando no mesmo arquivo (arq1), tem que intercalar o salvamento da ordenação externa.  
+- O programa realiza toda a primeira parte da ordenação externa, que consiste em pegar um bloco de dados e ordenar em memória principal e salvar em 2 caminhos diferentes alternadamente.  
 
-## Pioras
 
+## Próxima melhoria
+
+- Agora vai ser feita a segunda parte da ordenação, que é comprar um a um os registros do arquivo 1 com o do arquivo 2, ordenando e salvando no arquivo de indice, e colocando a busca binária para rodar nesse arquivo.
 
 ## Próximos Passos
 
