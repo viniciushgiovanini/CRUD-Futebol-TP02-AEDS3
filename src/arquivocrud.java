@@ -8,22 +8,45 @@ public class arquivocrud {
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
-  public void deletaTudo() {
+  public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4) {
 
     try {
 
-      PrintWriter writer = new PrintWriter("src/database/futebol.db");
-      PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
-      PrintWriter writer3 = new PrintWriter("src/database/arq1.db");
-      PrintWriter writer4 = new PrintWriter("src/database/arq2.db");
-      writer.print("");
-      writer.close();
-      writer2.print("");
-      writer2.close();
-      writer3.print("");
-      writer3.close();
-      writer4.print("");
-      writer4.close();
+      if (valor == 1) {
+        PrintWriter writer = new PrintWriter("src/database/futebol.db");
+        PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
+        writer.print("");
+        writer.close();
+        writer2.print("");
+        writer2.close();
+
+      }
+
+      if (valor1 == 1) {
+        PrintWriter writer3 = new PrintWriter("src/database/arq1.db");
+        writer3.print("");
+        writer3.close();
+
+      }
+
+      if (valor2 == 1) {
+        PrintWriter writer4 = new PrintWriter("src/database/arq2.db");
+        writer4.print("");
+        writer4.close();
+      }
+
+      if (valor3 == 1) {
+        PrintWriter writer5 = new PrintWriter("src/database/arq3.db");
+        writer5.print("");
+        writer5.close();
+
+      }
+
+      if (valor4 == 1) {
+        PrintWriter writer6 = new PrintWriter("src/database/arq4.db");
+        writer6.print("");
+        writer6.close();
+      }
 
     } catch (Exception e) {
       System.out.println("ERRO NO DELETA TUDO");
@@ -206,12 +229,351 @@ public class arquivocrud {
     return eImpar;
   }
 
-  public static void ordernarInter() {// Essa funcao está pegando 10 registros em 10 porem salvando no msm arquivo que
-    // é o arq 1, tem que intercalar pegou 10 arq 1 + 10 arq 2 + 10 arq2
+  public void ordenacaoExterna() {
+    int tamanhoCaminho = 10;
+    long contador1 = 0;
+    int contador2 = 0;
+    int contador3 = 0;
 
+    try {
+
+      RandomAccessFile arq1 = new RandomAccessFile("src/database/arq1.db", "rw");
+      RandomAccessFile arq2 = new RandomAccessFile("src/database/arq2.db", "rw");
+      RandomAccessFile arq3 = new RandomAccessFile("src/database/arq3.db", "rw");
+      RandomAccessFile arq4 = new RandomAccessFile("src/database/arq4.db", "rw");
+      indice ic = new indice();
+      indice ic2 = new indice();
+      // pegar o arq com mais caminhos para ler todos
+      long tamanhoArq1 = arq1.length();
+      tamanhoArq1 = (long) Math.ceil(tamanhoArq1 / 13);
+
+      long tamanhoArq2 = arq2.length();
+
+      tamanhoArq2 = (long) Math.ceil(tamanhoArq2 / 13);
+
+      long tamanhoPararExecucao = 0;
+
+      if (tamanhoArq1 == tamanhoArq2) {
+        tamanhoPararExecucao = (long) Math.ceil(tamanhoArq1 / 10);
+      } else {
+        if (tamanhoArq1 > tamanhoArq2) {
+          tamanhoPararExecucao = (long) Math.ceil(tamanhoArq1 / 10);
+        } else {
+          tamanhoPararExecucao = (long) Math.ceil(tamanhoArq2 / 10);
+        }
+      }
+
+      long valor1 = 0;
+      long valor2 = 0;
+      int contadorPontarq1 = 0;
+      int contadorPontarq2 = 0;
+      boolean podeLerV1 = true;
+      boolean podeLerV2 = true;
+
+      while (contador3 < tamanhoPararExecucao) {// laco que muda os 2 arquivores leitores (1 e 2) para o arquivo
+                                                // salvador (3 e 4)
+
+        if ((contador3 % 2) == 0) {// vai ler de 1 e 2 e salvar em 3 e 4
+          deletaTudo(-1, -1, -1, 1, 1);
+          if (contador3 != 0) {
+            tamanhoCaminho += 10;
+          }
+          while (contador1 < tamanhoPararExecucao) {// laco que muda entre os arquivos salvadores
+
+            contadorPontarq1 = 0;
+            contadorPontarq2 = 0;
+            contador2 = 0;
+
+            if ((contador1 % 2) == 0) {// vai ler de 1 e 2 e salvar em 3
+
+              while (contador2 < tamanhoCaminho) {
+
+                if (podeLerV1) {
+                  // leu o registro do 1 arquivo
+                  ic.setIdIndice(arq1.readShort());
+                  ic.setPosiIndice(arq1.readLong());
+                  ic.setLapide(arq1.readUTF());
+                  valor1 = ic.getIdIndice();
+
+                }
+
+                if (podeLerV2) {
+                  // leu o registro do 2 arquivo
+
+                  ic2.setIdIndice(arq2.readShort());
+                  valor2 = ic2.getIdIndice();
+                  ic2.setPosiIndice(arq2.readLong());
+                  ic2.setLapide(arq2.readUTF());
+
+                }
+
+                // fazer a comparacao
+
+                if (valor2 < valor1) {
+
+                  arq3.writeShort(ic2.getIdIndice());
+                  arq3.writeLong(ic2.getPosiIndice());
+                  arq3.writeUTF(ic2.getLapide());
+                  podeLerV1 = false;
+                  podeLerV2 = true;
+                  contadorPontarq2++;
+
+                } else {
+                  arq3.writeShort(ic.getIdIndice());
+                  arq3.writeLong(ic.getPosiIndice());
+                  arq3.writeUTF(ic.getLapide());
+                  podeLerV1 = true;
+                  podeLerV2 = false;
+                  contadorPontarq1++;
+
+                }
+
+                contador2++;
+              }
+
+              if (contadorPontarq1 != 10) {
+                long tamArq3 = arq3.length();
+                arq3.seek(tamArq3);
+                while (contadorPontarq1 <= 9) {
+                  arq3.writeShort(ic.getIdIndice());
+                  arq3.writeLong(ic.getPosiIndice());
+                  arq3.writeUTF(ic.getLapide());
+                  contadorPontarq1++;
+                  if (contadorPontarq1 < 10) {
+                    ic.setIdIndice(arq1.readShort());
+                    ic.setPosiIndice(arq1.readLong());
+                    ic.setLapide(arq1.readUTF());
+                  }
+
+                }
+
+              } else if (contadorPontarq2 != 10) {
+
+                long tamArq3 = arq3.length();
+                arq3.seek(tamArq3);
+                while (contadorPontarq2 <= 9) {
+                  arq3.writeShort(ic2.getIdIndice());
+                  arq3.writeLong(ic2.getPosiIndice());
+                  arq3.writeUTF(ic2.getLapide());
+                  contadorPontarq2++;
+                  if (contadorPontarq2 < 10) {
+                    ic2.setIdIndice(arq2.readShort());
+                    ic2.setPosiIndice(arq2.readLong());
+                    ic2.setLapide(arq2.readUTF());
+                  }
+
+                }
+              }
+              contador1++;
+            } else {// vai ler de 1 e 2 e salvar em 4
+              contador2 = 0;
+              contadorPontarq1 = 0;
+              contadorPontarq2 = 0;
+              podeLerV1 = true;
+              podeLerV2 = true;
+              valor1 = 0;
+              valor2 = 0;
+              while (contador2 < tamanhoCaminho) {
+
+                if (podeLerV1) {
+                  // leu o registro do 1 arquivo
+                  ic.setIdIndice(arq1.readShort());
+                  ic.setPosiIndice(arq1.readLong());
+                  ic.setLapide(arq1.readUTF());
+                  valor1 = ic.getIdIndice();
+
+                }
+
+                if (podeLerV2) {
+                  // leu o registro do 2 arquivo
+
+                  ic2.setIdIndice(arq2.readShort());
+                  valor2 = ic2.getIdIndice();
+                  ic2.setPosiIndice(arq2.readLong());
+                  ic2.setLapide(arq2.readUTF());
+
+                }
+
+                // fazer a comparacao
+
+                if (valor2 < valor1) {
+
+                  arq4.writeShort(ic2.getIdIndice());
+                  arq4.writeLong(ic2.getPosiIndice());
+                  arq4.writeUTF(ic2.getLapide());
+                  podeLerV1 = false;
+                  podeLerV2 = true;
+                  contadorPontarq2++;
+
+                } else {
+                  arq4.writeShort(ic.getIdIndice());
+                  arq4.writeLong(ic.getPosiIndice());
+                  arq4.writeUTF(ic.getLapide());
+                  podeLerV1 = true;
+                  podeLerV2 = false;
+                  contadorPontarq1++;
+
+                }
+
+                contador2++;
+              }
+
+              if (contadorPontarq1 != 10) {
+                long tamArq4 = arq4.length();
+                arq4.seek(tamArq4);
+                while (contadorPontarq1 <= 9) {
+                  arq4.writeShort(ic.getIdIndice());
+                  arq4.writeLong(ic.getPosiIndice());
+                  arq4.writeUTF(ic.getLapide());
+                  contadorPontarq1++;
+                  if (contadorPontarq1 < 10) {
+                    ic.setIdIndice(arq1.readShort());
+                    ic.setPosiIndice(arq1.readLong());
+                    ic.setLapide(arq1.readUTF());
+                  }
+
+                }
+
+              } else if (contadorPontarq2 != 10) {
+
+                long tamArq4 = arq4.length();
+                arq4.seek(tamArq4);
+                while (contadorPontarq2 <= 9) {
+                  arq4.writeShort(ic2.getIdIndice());
+                  arq4.writeLong(ic2.getPosiIndice());
+                  arq4.writeUTF(ic2.getLapide());
+                  contadorPontarq2++;
+                  if (contadorPontarq2 < 10) {
+                    ic2.setIdIndice(arq2.readShort());
+                    ic2.setPosiIndice(arq2.readLong());
+                    ic2.setLapide(arq2.readUTF());
+                  }
+
+                }
+              }
+              contador1++;
+            }
+          }
+
+        } else {// ler arquivo 3 e 4 e salvar em 1 e 2
+          deletaTudo(-1, 1, 1, -1, -1);
+
+          tamanhoCaminho += 10;
+          podeLerV1 = true;
+          podeLerV2 = true;
+          int contadorPontarq3 = 0;
+          int contadorPontarq4 = 0;
+          valor1 = 0;
+          valor2 = 0;
+          while (contador1 < tamanhoPararExecucao) {// laco que muda os 2 arquivores leitores (3 e 4) para o arquivo
+            // salvador (1 e 2)
+
+            contador2 = 0;
+
+            if ((contador1 % 2) == 0) {// vai ler de 3 e 4 e salvar em 1
+
+              while (contador2 < tamanhoCaminho) {// laco que salva do arquivo 3 e 4 no arquivo 3
+
+                if (podeLerV1) {
+                  // leu o registro do 1 arquivo
+                  ic.setIdIndice(arq3.readShort());
+                  ic.setPosiIndice(arq3.readLong());
+                  ic.setLapide(arq3.readUTF());
+                  valor1 = ic.getIdIndice();
+
+                }
+
+                if (podeLerV2) {
+                  // leu o registro do 2 arquivo
+
+                  ic2.setIdIndice(arq4.readShort());
+                  valor2 = ic2.getIdIndice();
+                  ic2.setPosiIndice(arq4.readLong());
+                  ic2.setLapide(arq4.readUTF());
+
+                }
+
+                // fazer a comparacao
+
+                if (valor2 < valor1) {
+
+                  arq1.writeShort(ic2.getIdIndice());
+                  arq1.writeLong(ic2.getPosiIndice());
+                  arq1.writeUTF(ic2.getLapide());
+                  podeLerV1 = false;
+                  podeLerV2 = true;
+                  contadorPontarq2++;
+
+                } else {
+                  arq1.writeShort(ic.getIdIndice());
+                  arq1.writeLong(ic.getPosiIndice());
+                  arq1.writeUTF(ic.getLapide());
+                  podeLerV1 = true;
+                  podeLerV2 = false;
+                  contadorPontarq1++;
+
+                }
+
+                contador2++;
+              }
+
+              if (contadorPontarq1 != 10) {
+                long tamArq1 = arq1.length();
+                arq1.seek(tamArq1);
+                while (contadorPontarq3 <= 9) {
+                  arq1.writeShort(ic.getIdIndice());
+                  arq1.writeLong(ic.getPosiIndice());
+                  arq1.writeUTF(ic.getLapide());
+                  contadorPontarq1++;
+                  if (contadorPontarq3 < 10) {
+                    ic.setIdIndice(arq3.readShort());
+                    ic.setPosiIndice(arq3.readLong());
+                    ic.setLapide(arq3.readUTF());
+                  }
+
+                }
+
+              } else if (contadorPontarq4 != 10) {
+
+                long tamArq4 = arq4.length();
+                arq4.seek(tamArq4);
+                while (contadorPontarq4 <= 9) {
+                  arq1.writeShort(ic2.getIdIndice());
+                  arq1.writeLong(ic2.getPosiIndice());
+                  arq1.writeUTF(ic2.getLapide());
+                  contadorPontarq2++;
+                  if (contadorPontarq4 < 10) {
+                    ic2.setIdIndice(arq4.readShort());
+                    ic2.setPosiIndice(arq4.readLong());
+                    ic2.setLapide(arq4.readUTF());
+                  }
+
+                }
+              }
+            } else {// vai ler de 3 e 4 e salvar em 4
+              // pegar codigo acima e ler do arquivo 3 e 4 e salvar no 4.
+            }
+          }
+
+        }
+
+        contador3++;
+      }
+    } catch (Exception e) {
+      String error = e.getMessage();
+      System.out.println("Erro: " + error);
+    }
+
+  }
+
+  public void ordenacaoDistribuicao() {// Essa funcao está pegando 10 registros em 10 porem salvando no msm
+                                       // arquivo que
+    // é o arq 1, tem que intercalar pegou 10 arq 1 + 10 arq 2 + 10 arq2
     boolean eImpar = corrigirArquivoIndice();// essa funcao tem o objetivo de pegar o arquivo e ver se ele esta com a
                                              // quantidade de registros pares ou impares e corrigir o embaralhamento do
                                              // 0 caso seja impar para fazer a ordenacao
+
+    deletaTudo(-1, 1, 1, -1, -1);
 
     try {
 
@@ -306,6 +668,8 @@ public class arquivocrud {
         }
       }
 
+      ordenacaoExterna();
+
       arqI.close();
       arq1.close();
       arq2.close();
@@ -398,7 +762,7 @@ public class arquivocrud {
     String lapide = "*";
 
     if (idOrnot == true) {// Inicio Pesquisa Númerica
-      ordernarInter();
+      ordenacaoDistribuicao();
       int entradaInt = Integer.parseInt(recebendo);
       retornoPesquisa = pesquisaBinariaArquivoIndice(entradaInt);// chama a pesquisa binária
 

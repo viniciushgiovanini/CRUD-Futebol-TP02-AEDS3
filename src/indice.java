@@ -44,6 +44,8 @@ public class indice {
     this.posiIndice = posiIndice;
   }
 
+  // faz a escrita do indice no arquivo de maneira desordenada(inserir
+  // clube/create)
   public void writeIndicetoArq() {
 
     // -------------------Create---------------------------------//
@@ -108,6 +110,7 @@ public class indice {
 
   }
 
+  // faz o swap para ordenar a distribuicao
   public static void swapIndice(indice[] a, int posi1, int posi2) {
     indice vTemp[] = new indice[1];
 
@@ -117,6 +120,7 @@ public class indice {
 
   }
 
+  // quicksort da distribuicao
   public void quicksortIndice(indice[] array, int esq, int dir) {
 
     int i = esq, j = dir;
@@ -139,6 +143,7 @@ public class indice {
 
   }
 
+  // faz um toByteArray para salvar o array de indice no arquivo (distribuicao)
   public byte[] toByteArray(indice[] ic, int qtdX) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);
@@ -160,4 +165,5 @@ public class indice {
     }
     return baos.toByteArray();
   }
+
 }

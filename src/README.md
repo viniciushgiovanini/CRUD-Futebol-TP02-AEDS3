@@ -2,14 +2,16 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.4.6]
+## Melhorias Versão [0.4.7]
 
-- O programa realiza toda a primeira parte da ordenação externa, que consiste em pegar um bloco de dados e ordenar em memória principal e salvar em 2 caminhos diferentes alternadamente.  
+- Agora o programa ordena o arq 1 e 2 jogando no arquivo 3 e 4, e ordena o arquivo 3 e 4 jogando em 3 mas não em 4, fazer a parte 4.  
+- Foi mudado o metodo deletar tudo, agora tem que passar qual arq deseja deletar com o valor 1 como parametro da função, o arquivo de indice e o de clubes é o primeiro, ai logo apos vem o arq 1 2 3 e 4 de ordenacao.  
+ 
 
 
 ## Próxima melhoria
 
-- Agora vai ser feita a segunda parte da ordenação, que é comprar um a um os registros do arquivo 1 com o do arquivo 2, ordenando e salvando no arquivo de indice, e colocando a busca binária para rodar nesse arquivo.
+- Quando acabar a programacao da ordencao externa com caminhos completos fazer o teste com caminhos incompletos.  
 
 ## Próximos Passos
 
