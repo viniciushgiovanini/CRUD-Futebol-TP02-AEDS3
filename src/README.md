@@ -2,17 +2,18 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.4.7]
+## Melhorias Versão [0.4.7.1]
 
-- Agora o programa ordena o arq 1 e 2 jogando no arquivo 3 e 4, e ordena o arquivo 3 e 4 jogando em 3 mas não em 4, fazer a parte 4.  
-- Foi mudado o metodo deletar tudo, agora tem que passar qual arq deseja deletar com o valor 1 como parametro da função, o arquivo de indice e o de clubes é o primeiro, ai logo apos vem o arq 1 2 3 e 4 de ordenacao.  
+- O arquivo ordena o arq 1 e 2 e joga em 3 e 1 e 2 e joga em 4, também ordena 3 e 4 jogando em arq 1 e jogando em arq 2, mas não salva qual foi o ultimo arquivo ordenado.
+- OBS: O arquivo só está ordenando quando os caminhos estão completos.
  
 
 
 ## Próxima melhoria
 
-- Quando acabar a programacao da ordencao externa com caminhos completos fazer o teste com caminhos incompletos.  
-
+- Marcar o ultimo arquivo ordenado para jogar na busca binária.  
+- Testar com mais de 40 registros, testar com 60 e 80.   
+- Fazer ele ordernar caminhos incompletos.
 ## Próximos Passos
 
 - Ordenacao externa final.  
