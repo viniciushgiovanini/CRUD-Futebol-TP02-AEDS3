@@ -2,16 +2,16 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.4.7.2]
+## Melhorias Versão [0.4.7.3]
 
 - O arquivo agora pega o ultimo arquivo ordenado e salva no aindice.db
 - OBS: O arquivo só está ordenando quando os caminhos estão completos.
  
 
 
-## Próxima melhoria
-- Fazer ele ordernar caminhos incompletos. (Isso será feito pegando a divisaão de um numero menor que 10 por 10, e trabalhando com essas casas decimais para rodar até ela, e caso sobrar ele salva o resto).  
-- Testar com mais de 40 registros, testar com 60 e 80.   
+## Próxima melhoria (Problemas)
+- O programa só ordena quando está com os 2 caminhos cheios.
+- Testar antes de ler os caminhos se eles contem numeros ou não, e se não estiverem cheios fazer o caminho ser menor que o tamanho cheio . 
 
 ## Próximos Passos
 

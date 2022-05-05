@@ -2,6 +2,29 @@ import java.io.*;
 
 public class ordenacaoexterna {
 
+  public static int pegarParteDecimalFloat(float num) {
+
+    String n = String.valueOf(num);
+    int numero1 = 0;
+    for (int i = 0; i < n.length(); i++) {
+
+      char a = n.charAt(i);
+
+      if (a == '.') {
+        i++;
+
+        a = n.charAt(i);
+        if (a != '0') {
+          numero1 = Character.getNumericValue(a);
+        }
+
+        i = n.length();
+      }
+
+    }
+    return numero1;
+  }
+
   public static int qtdElementoArrayIndice(indice[] a) {
     // essa funcao pega a quantidade de elementos presente no array de objeto
     // indice, foi construida com o objetivo de gerar o número do elemento mais a
@@ -95,24 +118,37 @@ public class ordenacaoexterna {
       indice ic2 = new indice();
       // pegar o arq com mais caminhos para ler todos
       long tamanhoArq1 = arq1.length();
-      tamanhoArq1 = (long) Math.ceil(tamanhoArq1 / 13);
+      tamanhoArq1 = (long) tamanhoArq1 / 13;
 
       long tamanhoArq2 = arq2.length();
 
-      tamanhoArq2 = (long) Math.ceil(tamanhoArq2 / 13);
+      tamanhoArq2 = (long) tamanhoArq2 / 13;
 
-      long tamanhoPararExecucao = 0;
-
+      float tamanhoPararExecucao = 0;
+      int qtdExecucaoPrincipal = 0;
+      int qtdExecucaoIncompleta = 0;
       if (tamanhoArq1 == tamanhoArq2) {
-        tamanhoPararExecucao = (long) Math.ceil(tamanhoArq1 / 10);
+        tamanhoPararExecucao = (float) tamanhoArq1 / 10;
       } else {
         if (tamanhoArq1 > tamanhoArq2) {
-          tamanhoPararExecucao = (long) Math.ceil(tamanhoArq1 / 10);
+          tamanhoPararExecucao = (float) tamanhoArq1 / 10;
+
+          if (tamanhoArq2 != 0) {
+            tamanhoPararExecucao += (float) tamanhoArq2 / 10;
+          }
+
         } else {
-          tamanhoPararExecucao = (long) Math.ceil(tamanhoArq2 / 10);
+          tamanhoPararExecucao = (float) tamanhoArq2 / 10;
+          if (tamanhoArq1 != 0) {
+            tamanhoPararExecucao += (float) tamanhoArq1 / 10;
+          }
+
         }
       }
-      int qtdExecucaoPrincipal = (int) Math.ceil(tamanhoPararExecucao / 2) + 1;
+
+      qtdExecucaoPrincipal = (int) Math.ceil(tamanhoPararExecucao / 2);
+      qtdExecucaoIncompleta = pegarParteDecimalFloat(tamanhoPararExecucao);
+
       long valor1 = 0;
       long valor2 = 0;
       int contadorPontarq1 = 0;
@@ -127,13 +163,13 @@ public class ordenacaoexterna {
           arqcru.deletaTudo(-1, -1, -1, 1, 1);
           if (contador3 != 0) {
             tamanhoCaminho += 10;
-            tamanhoPararExecucao = (int) Math.round(tamanhoPararExecucao / 2);
+            qtdExecucaoPrincipal /= 2;
             arq1.seek(0);
             arq2.seek(0);
             arq3.seek(0);
             arq4.seek(0);
           }
-          while (contador1 < tamanhoPararExecucao) {// laco que muda entre os arquivos salvadores
+          while (contador1 < qtdExecucaoPrincipal) {// laco que muda entre os arquivos salvadores
 
             contadorPontarq1 = 0;
             contadorPontarq2 = 0;
