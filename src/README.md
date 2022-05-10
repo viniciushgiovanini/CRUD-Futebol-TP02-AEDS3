@@ -2,17 +2,14 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.4.7.4]
+## Melhorias Versão [0.4.7.5]
 
-- Continua com o mesmo erros porém o código foi reescrito.
-- O arquivo agora pega o ultimo arquivo ordenado e salva no aindice.db
-- OBS: O arquivo só está ordenando quando os caminhos estão completos.
- 
+- O arquivo realiza a grande parte da ordenacao externa, foi testado até 40 valores, falta testar metade do arquivo 4, e o loop que quando completar mais de 39 registros se o arq1 e arq2 vao resetar direito.
 
 
 ## Próxima melhoria (Problemas)
-- O programa só ordena quando está com os 2 caminhos cheios.
-- Testar antes de ler os caminhos se eles contem numeros ou não, e se não estiverem cheios fazer o caminho ser menor que o tamanho cheio . 
+- Fazer a atribuicao com a busca binaria.  
+- Fazer o read e delete.  
 
 ## Próximos Passos
 
