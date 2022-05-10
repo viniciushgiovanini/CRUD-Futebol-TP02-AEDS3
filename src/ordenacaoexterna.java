@@ -665,6 +665,73 @@ public class ordenacaoexterna {
 
   }
 
+  public static void ordernarToArqIndice(Boolean ultimoSavearq1, boolean ultimoSavearq2, boolean ultimoSavearq3,
+      boolean ultimoSavearq4) {
+    try {
+      RandomAccessFile arqIndice = new RandomAccessFile("src/database/aindices.db", "rw");
+      if (ultimoSavearq1 == true) {
+
+        RandomAccessFile arq1 = new RandomAccessFile("src/database/arq1.db", "rw");
+        long tamanhoArq1 = arq1.length();
+        int tam = (int) tamanhoArq1;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq1.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq1.close();
+      }
+
+      if (ultimoSavearq2 == true) {
+
+        RandomAccessFile arq2 = new RandomAccessFile("src/database/arq2.db", "rw");
+        long tamanhoArq2 = arq2.length();
+        int tam = (int) tamanhoArq2;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq2.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq2.close();
+      }
+
+      if (ultimoSavearq3 == true) {
+
+        RandomAccessFile arq3 = new RandomAccessFile("src/database/arq3.db", "rw");
+        long tamanhoArq3 = arq3.length();
+        int tam = (int) tamanhoArq3;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq3.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq3.close();
+      }
+
+      if (ultimoSavearq4 == true) {
+
+        RandomAccessFile arq4 = new RandomAccessFile("src/database/arq4.db", "rw");
+        long tamanhoArq4 = arq4.length();
+        int tam = (int) tamanhoArq4;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq4.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq4.close();
+      }
+
+      arqIndice.close();
+    } catch (Exception e) {
+      String error = e.getMessage();
+      System.out.println("Erro na finalização da OE (OrdenacaoToIndice): " + error);
+    }
+  }
+
   public static void ordenacaoExterna() {
     arquivocrud arqcru = new arquivocrud();
     int tamanhoCaminho = 10;
@@ -752,7 +819,7 @@ public class ordenacaoexterna {
 
             } else { // vai salvar 3 e 4 no arquivo 2
 
-              ultimoSavearq2 = false;
+              ultimoSavearq2 = ordernar3e4para2(arq2, arq3, arq4, tamanhoCaminho);
 
             }
 
@@ -761,7 +828,11 @@ public class ordenacaoexterna {
         }
         contadorEXECPrinc++;
       }
-
+      arq1.close();
+      arq2.close();
+      arq3.close();
+      arq4.close();
+      ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3, ultimoSavearq4);
     } catch (Exception e) {
       String error = e.getMessage();
       System.out.println("Erro na finalização da OE: " + error);
