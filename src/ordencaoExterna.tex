@@ -1,0 +1,666 @@
+public void ordenacaoExterna() {
+    arquivocrud arqcru = new arquivocrud();
+    int tamanhoCaminho = 10;
+    long contador1 = 0;
+    int contador2 = 0;
+    int contador3 = 0;
+    boolean ultimoSavearq1 = false;
+    boolean ultimoSavearq2 = false;
+    boolean ultimoSavearq3 = false;
+    boolean ultimoSavearq4 = false;
+
+    try {
+
+      RandomAccessFile arq1 = new RandomAccessFile("src/database/arq1.db", "rw");
+      RandomAccessFile arq2 = new RandomAccessFile("src/database/arq2.db", "rw");
+      RandomAccessFile arq3 = new RandomAccessFile("src/database/arq3.db", "rw");
+      RandomAccessFile arq4 = new RandomAccessFile("src/database/arq4.db", "rw");
+      indice ic = new indice();
+      indice ic2 = new indice();
+      // pegar o arq com mais caminhos para ler todos
+      long tamanhoArq1 = arq1.length();
+      tamanhoArq1 = (long) tamanhoArq1 / 13;
+
+      long tamanhoArq2 = arq2.length();
+
+      tamanhoArq2 = (long) tamanhoArq2 / 13;
+
+      long tamanhoArq3 = arq3.length();
+      tamanhoArq3 = (long) tamanhoArq3 / 13;
+
+      long tamanhoArq4 = arq4.length();
+      tamanhoArq4 = (long) tamanhoArq4 / 13;
+
+      float tamanhoPararExecucao = 0;
+      int qtdExecucaoPrincipal = 0;
+      // int qtdExecucaoIncompleta = 0;
+      if (tamanhoArq1 == tamanhoArq2) {
+        tamanhoPararExecucao = (float) tamanhoArq1 / 10;
+      } else {
+        if (tamanhoArq1 > tamanhoArq2) {
+          tamanhoPararExecucao = (float) tamanhoArq1 / 10;
+
+          if (tamanhoArq2 != 0) {
+            tamanhoPararExecucao += (float) tamanhoArq2 / 10;
+          }
+
+        } else {
+          tamanhoPararExecucao = (float) tamanhoArq2 / 10;
+          if (tamanhoArq1 != 0) {
+            tamanhoPararExecucao += (float) tamanhoArq1 / 10;
+          }
+
+        }
+      }
+
+      qtdExecucaoPrincipal = (int) Math.ceil(tamanhoPararExecucao / 2);
+      // qtdExecucaoIncompleta = pegarParteDecimalFloat(tamanhoPararExecucao);
+
+      long valor1 = 0;
+      long valor2 = 0;
+      int contadorPontarq1 = 0;
+      int contadorPontarq2 = 0;
+      boolean podeLerV1 = true;
+      boolean podeLerV2 = true;
+
+      while (contador3 < qtdExecucaoPrincipal) {// laco que muda os 2 arquivores leitores (1 e 2) para o arquivo
+                                                // salvador (3 e 4)
+
+        if ((contador3 % 2) == 0) {// vai ler de 1 e 2 e salvar em 3 e 4
+
+          arqcru.deletaTudo(-1, -1, -1, 1, 1);
+
+          if (contador3 != 0) {
+            tamanhoCaminho += 10;
+            qtdExecucaoPrincipal /= 2;
+            arq1.seek(0);
+            arq2.seek(0);
+            arq3.seek(0);
+            arq4.seek(0);
+          }
+
+          while (contador1 < qtdExecucaoPrincipal) {// laco que muda entre os arquivos salvadores
+
+            contadorPontarq1 = 0;
+            contadorPontarq2 = 0;
+            contador2 = 0;
+
+            // sempre antes de entrar no loop de ler ele tem que testar se existe o arquivo
+            // 2 de dados, caso contrario ele pega o arquivo principal e ja joga no
+            // quicksort.
+
+            if ((contador1 % 2) == 0) {
+              int convertTamanhoArq2 = (int) tamanhoArq2;
+              if (convertTamanhoArq2 != 0) {// VAI LER DE 1 E 2 E SALVAR EM 3
+
+                while (contador2 < tamanhoCaminho) {
+
+                  if (podeLerV1) {
+                    // leu o registro do 1 arquivo
+                    ic.setIdIndice(arq1.readShort());
+                    ic.setPosiIndice(arq1.readLong());
+                    ic.setLapide(arq1.readUTF());
+                    valor1 = ic.getIdIndice();
+
+                  }
+
+                  if (podeLerV2) {
+                    // leu o registro do 2 arquivo
+
+                    ic2.setIdIndice(arq2.readShort());
+                    valor2 = ic2.getIdIndice();
+                    ic2.setPosiIndice(arq2.readLong());
+                    ic2.setLapide(arq2.readUTF());
+
+                  }
+
+                  // fazer a comparacao
+
+                  if (valor2 < valor1) {
+
+                    arq3.writeShort(ic2.getIdIndice());
+                    arq3.writeLong(ic2.getPosiIndice());
+                    arq3.writeUTF(ic2.getLapide());
+                    podeLerV1 = false;
+                    podeLerV2 = true;
+                    contadorPontarq2++;
+
+                  } else {
+                    arq3.writeShort(ic.getIdIndice());
+                    arq3.writeLong(ic.getPosiIndice());
+                    arq3.writeUTF(ic.getLapide());
+                    podeLerV1 = true;
+                    podeLerV2 = false;
+                    contadorPontarq1++;
+
+                  }
+
+                  contador2++;
+                }
+
+                if (contadorPontarq1 != tamanhoCaminho) {
+                  long tamArq3 = arq3.length();
+                  arq3.seek(tamArq3);
+                  int tamanhoCaminhoIncompleto1 = (int) tamanhoArq1;
+                  while (contadorPontarq1 < tamanhoCaminhoIncompleto1) {
+                    arq3.writeShort(ic.getIdIndice());
+                    arq3.writeLong(ic.getPosiIndice());
+                    arq3.writeUTF(ic.getLapide());
+                    contadorPontarq1++;
+                    if (contadorPontarq1 < tamanhoCaminho) {
+                      ic.setIdIndice(arq1.readShort());
+                      ic.setPosiIndice(arq1.readLong());
+                      ic.setLapide(arq1.readUTF());
+                    }
+
+                  }
+
+                } else if (contadorPontarq2 != tamanhoCaminho) {
+                  int tamanhoCaminhoIncompleto2 = (int) tamanhoArq2;
+                  long tamArq3 = arq3.length();
+                  arq3.seek(tamArq3);
+                  while (contadorPontarq2 < tamanhoCaminhoIncompleto2) {
+                    arq3.writeShort(ic2.getIdIndice());
+                    arq3.writeLong(ic2.getPosiIndice());
+                    arq3.writeUTF(ic2.getLapide());
+                    contadorPontarq2++;
+                    if (contadorPontarq2 < tamanhoCaminhoIncompleto2) {
+                      ic2.setIdIndice(arq2.readShort());
+                      ic2.setPosiIndice(arq2.readLong());
+                      ic2.setLapide(arq2.readUTF());
+                    }
+
+                  }
+                }
+                ultimoSavearq1 = false;
+                ultimoSavearq2 = false;
+                ultimoSavearq3 = true;
+                ultimoSavearq4 = false;
+                contador1++;
+
+              } else {// caso o arquivo 1 tenha dado e o 2 não.
+                int tamanhoCaminhoIncompleto1 = (int) tamanhoArq1;
+                int novoContador = 0;
+                while (novoContador < tamanhoCaminhoIncompleto1) {
+
+                  ic.setIdIndice(arq1.readShort());
+                  ic.setPosiIndice(arq1.readLong());
+                  ic.setLapide(arq1.readUTF());
+
+                  arq3.writeShort(ic.getIdIndice());
+                  arq3.writeLong(ic.getPosiIndice());
+                  arq3.writeUTF(ic.getLapide());
+
+                  novoContador++;
+                }
+                ultimoSavearq1 = false;
+                ultimoSavearq2 = false;
+                ultimoSavearq3 = true;
+                ultimoSavearq4 = false;
+              }
+
+            } else {// vai ler de 1 e 2 e salvar em 4
+              contador2 = 0;
+              contadorPontarq1 = 0;
+              contadorPontarq2 = 0;
+              podeLerV1 = true;
+              podeLerV2 = true;
+              valor1 = 0;
+              valor2 = 0;
+
+              // aqui tem um erro pois quando o caminho do arquivo um tiver todos os elementos
+              // e o 2 nao tiver nenhum ele ainda faz a comparacao
+              int convertTamanhoArq1 = (int) tamanhoArq1;
+              if ((convertTamanhoArq1 - tamanhoCaminho) == tamanhoCaminho) {
+
+                while (contador2 < tamanhoCaminho) {
+
+                  if (podeLerV1) {
+                    // leu o registro do 1 arquivo
+                    ic.setIdIndice(arq1.readShort());
+                    ic.setPosiIndice(arq1.readLong());
+                    ic.setLapide(arq1.readUTF());
+                    valor1 = ic.getIdIndice();
+
+                  }
+
+                  if (podeLerV2) {
+                    // leu o registro do 2 arquivo
+
+                    ic2.setIdIndice(arq2.readShort());
+                    valor2 = ic2.getIdIndice();
+                    ic2.setPosiIndice(arq2.readLong());
+                    ic2.setLapide(arq2.readUTF());
+
+                  }
+
+                  // fazer a comparacao
+
+                  if (valor2 < valor1) {
+
+                    arq4.writeShort(ic2.getIdIndice());
+                    arq4.writeLong(ic2.getPosiIndice());
+                    arq4.writeUTF(ic2.getLapide());
+                    podeLerV1 = false;
+                    podeLerV2 = true;
+                    contadorPontarq2++;
+
+                  } else {
+                    arq4.writeShort(ic.getIdIndice());
+                    arq4.writeLong(ic.getPosiIndice());
+                    arq4.writeUTF(ic.getLapide());
+                    podeLerV1 = true;
+                    podeLerV2 = false;
+                    contadorPontarq1++;
+
+                  }
+
+                  contador2++;
+                }
+
+                if (contadorPontarq1 != tamanhoCaminho) {
+                  long tamArq4 = arq4.length();
+                  arq4.seek(tamArq4);
+                  int tamanhoCaminhoIncompleto1 = (int) tamanhoArq1;
+                  while (contadorPontarq1 < tamanhoCaminhoIncompleto1) {
+                    arq4.writeShort(ic.getIdIndice());
+                    arq4.writeLong(ic.getPosiIndice());
+                    arq4.writeUTF(ic.getLapide());
+                    contadorPontarq1++;
+                    if (contadorPontarq1 < tamanhoCaminhoIncompleto1) {
+                      ic.setIdIndice(arq1.readShort());
+                      ic.setPosiIndice(arq1.readLong());
+                      ic.setLapide(arq1.readUTF());
+                    }
+
+                  }
+
+                } else if (contadorPontarq2 != tamanhoCaminho) {
+
+                  long tamArq4 = arq4.length();
+                  arq4.seek(tamArq4);
+                  int tamanhoCaminhoIncompleto2 = (int) tamanhoArq2;
+                  while (contadorPontarq2 <= tamanhoCaminhoIncompleto2) {
+                    arq4.writeShort(ic2.getIdIndice());
+                    arq4.writeLong(ic2.getPosiIndice());
+                    arq4.writeUTF(ic2.getLapide());
+                    contadorPontarq2++;
+                    if (contadorPontarq2 < tamanhoCaminhoIncompleto2) {
+                      ic2.setIdIndice(arq2.readShort());
+                      ic2.setPosiIndice(arq2.readLong());
+                      ic2.setLapide(arq2.readUTF());
+                    }
+
+                  }
+                }
+                ultimoSavearq1 = false;
+                ultimoSavearq2 = false;
+                ultimoSavearq3 = false;
+                ultimoSavearq4 = true;
+                contador1++;
+              } else {
+                int tamanhoCaminhoIncompleto1 = (int) tamanhoArq1;
+                int novoCont = 0;
+                int qtdElementosNoCaminho = (tamanhoCaminhoIncompleto1 - tamanhoCaminho);
+                while (novoCont < qtdElementosNoCaminho) {
+
+                  ic.setIdIndice(arq1.readShort());
+                  ic.setPosiIndice(arq1.readLong());
+                  ic.setLapide(arq1.readUTF());
+
+                  arq4.writeShort(ic.getIdIndice());
+                  arq4.writeLong(ic.getPosiIndice());
+                  arq4.writeUTF(ic.getLapide());
+
+                  novoCont++;
+                }
+                contador1++;
+                ultimoSavearq1 = false;
+                ultimoSavearq2 = false;
+                ultimoSavearq3 = false;
+                ultimoSavearq4 = true;
+              }
+            }
+          }
+
+        } else {// ler arquivo 3 e 4 e salvar em 1 e 2
+
+          arqcru.deletaTudo(-1, 1, 1, -1, -1);
+
+          tamanhoCaminho += 10;
+          podeLerV1 = true;
+          podeLerV2 = true;
+          int contadorPontarq3 = 0;
+          int contadorPontarq4 = 0;
+          valor1 = 0;
+          valor2 = 0;
+          contador1 = 0;
+
+          int tamanhoPararExecucao2 = (int) Math.round(tamanhoPararExecucao / 2);
+          while (contador1 < tamanhoPararExecucao2) {// laco que muda os 2 arquivores leitores (3 e 4) para o
+                                                     // arquivo
+            // salvador (1 e 2)
+            arq1.seek(0);
+            arq2.seek(0);
+            arq3.seek(0);
+            arq4.seek(0);
+            contadorPontarq3 = 0;
+            contadorPontarq4 = 0;
+            contador2 = 0;
+
+            if ((contador1 % 2) == 0) {
+              int convertTamanhoArq4 = (int) tamanhoArq4;
+              if (convertTamanhoArq4 != 0) {// VAI LER DE 3 E 4 E SALVAR EM 1
+
+                while (contador2 < tamanhoCaminho) {// laco que salva do arquivo 3 e 4 no arquivo 1
+
+                  if (podeLerV1) {
+                    // leu o registro do 1 arquivo
+                    ic.setIdIndice(arq3.readShort());
+                    ic.setPosiIndice(arq3.readLong());
+                    ic.setLapide(arq3.readUTF());
+                    valor1 = ic.getIdIndice();
+
+                  }
+
+                  if (podeLerV2) {
+                    // leu o registro do 2 arquivo
+
+                    ic2.setIdIndice(arq4.readShort());
+                    valor2 = ic2.getIdIndice();
+                    ic2.setPosiIndice(arq4.readLong());
+                    ic2.setLapide(arq4.readUTF());
+
+                  }
+
+                  // fazer a comparacao
+
+                  if (valor2 < valor1) {
+
+                    arq1.writeShort(ic2.getIdIndice());
+                    arq1.writeLong(ic2.getPosiIndice());
+                    arq1.writeUTF(ic2.getLapide());
+                    podeLerV1 = false;
+                    podeLerV2 = true;
+                    contadorPontarq4++;
+
+                  } else {
+                    arq1.writeShort(ic.getIdIndice());
+                    arq1.writeLong(ic.getPosiIndice());
+                    arq1.writeUTF(ic.getLapide());
+                    podeLerV1 = true;
+                    podeLerV2 = false;
+                    contadorPontarq3++;
+
+                  }
+
+                  contador2++;
+                }
+
+                if (contadorPontarq3 != tamanhoCaminho) {
+                  long tamArq1 = arq1.length();
+                  arq1.seek(tamArq1);
+                  int tamanhoCaminhoIncompleto3 = (int) tamanhoArq3;
+                  while (contadorPontarq3 < tamanhoCaminhoIncompleto3) {
+                    arq1.writeShort(ic.getIdIndice());
+                    arq1.writeLong(ic.getPosiIndice());
+                    arq1.writeUTF(ic.getLapide());
+                    contadorPontarq3++;
+                    if (contadorPontarq3 < tamanhoCaminhoIncompleto3) {
+                      ic.setIdIndice(arq3.readShort());
+                      ic.setPosiIndice(arq3.readLong());
+                      ic.setLapide(arq3.readUTF());
+                    }
+
+                  }
+
+                } else if (contadorPontarq4 != tamanhoCaminho) {
+
+                  long tamArq1 = arq1.length();
+                  arq1.seek(tamArq1);
+                  int tamanhoCaminhoIncompleto4 = (int) tamanhoArq4;
+                  while (contadorPontarq4 < tamanhoCaminhoIncompleto4) {
+                    arq1.writeShort(ic2.getIdIndice());
+                    arq1.writeLong(ic2.getPosiIndice());
+                    arq1.writeUTF(ic2.getLapide());
+                    contadorPontarq4++;
+                    if (contadorPontarq4 < tamanhoCaminhoIncompleto4) {
+                      ic2.setIdIndice(arq4.readShort());
+                      ic2.setPosiIndice(arq4.readLong());
+                      ic2.setLapide(arq4.readUTF());
+                    }
+
+                  }
+                }
+                ultimoSavearq1 = true;
+                ultimoSavearq2 = false;
+                ultimoSavearq3 = false;
+                ultimoSavearq4 = false;
+                contador1++;
+
+              } else {// caso nao exista registro no arquivo 4 ele pula as comparações e ja salva no
+                      // arq 1 o arq 3
+
+                int tamanhoCaminhoIncompleto3 = (int) tamanhoArq3;
+                int novoContador = 0;
+                while (novoContador < tamanhoCaminhoIncompleto3) {
+
+                  ic.setIdIndice(arq3.readShort());
+                  ic.setPosiIndice(arq3.readLong());
+                  ic.setLapide(arq3.readUTF());
+
+                  arq1.writeShort(ic.getIdIndice());
+                  arq1.writeLong(ic.getPosiIndice());
+                  arq1.writeUTF(ic.getLapide());
+
+                  novoContador++;
+                }
+                contador1++;
+                ultimoSavearq1 = true;
+                ultimoSavearq2 = false;
+                ultimoSavearq3 = false;
+                ultimoSavearq4 = false;
+              }
+            } else {// vai ler de 3 e 4 e salvar em 2
+              // pegar codigo acima e ler do arquivo 3 e 4 e salvar no 4.
+
+              contadorPontarq3 = 0;
+              contadorPontarq4 = 0;
+              podeLerV1 = true;
+              podeLerV2 = true;
+              valor1 = 0;
+              valor2 = 0;
+
+              int convertTamanhoArq4 = (int) tamanhoArq4;
+              if (convertTamanhoArq4 != 0) {
+
+                while (contador2 < tamanhoCaminho) {// laco que salva do arquivo 3 e 4 no arquivo 4
+
+                  if (podeLerV1) {
+                    // leu o registro do 1 arquivo
+                    ic.setIdIndice(arq3.readShort());
+                    ic.setPosiIndice(arq3.readLong());
+                    ic.setLapide(arq3.readUTF());
+                    valor1 = ic.getIdIndice();
+
+                  }
+
+                  if (podeLerV2) {
+                    // leu o registro do 2 arquivo
+
+                    ic2.setIdIndice(arq4.readShort());
+                    valor2 = ic2.getIdIndice();
+                    ic2.setPosiIndice(arq4.readLong());
+                    ic2.setLapide(arq4.readUTF());
+
+                  }
+
+                  // fazer a comparacao
+
+                  if (valor2 < valor1) {
+
+                    arq2.writeShort(ic2.getIdIndice());
+                    arq2.writeLong(ic2.getPosiIndice());
+                    arq2.writeUTF(ic2.getLapide());
+                    podeLerV1 = false;
+                    podeLerV2 = true;
+                    contadorPontarq4++;
+
+                  } else {
+                    arq2.writeShort(ic.getIdIndice());
+                    arq2.writeLong(ic.getPosiIndice());
+                    arq2.writeUTF(ic.getLapide());
+                    podeLerV1 = true;
+                    podeLerV2 = false;
+                    contadorPontarq3++;
+
+                  }
+
+                  contador2++;
+                }
+
+                if (contadorPontarq3 != tamanhoCaminho) {
+                  long tamArq2 = arq2.length();
+                  arq2.seek(tamArq2);
+                  while (contadorPontarq3 <= tamanhoCaminho - 1) {
+                    arq2.writeShort(ic.getIdIndice());
+                    arq2.writeLong(ic.getPosiIndice());
+                    arq2.writeUTF(ic.getLapide());
+                    contadorPontarq3++;
+                    if (contadorPontarq3 < tamanhoCaminho) {
+                      ic.setIdIndice(arq3.readShort());
+                      ic.setPosiIndice(arq3.readLong());
+                      ic.setLapide(arq3.readUTF());
+                    }
+
+                  }
+
+                } else if (contadorPontarq4 != tamanhoCaminho) {
+
+                  long tamArq2 = arq2.length();
+                  arq2.seek(tamArq2);
+                  while (contadorPontarq4 <= tamanhoCaminho - 1) {
+                    arq2.writeShort(ic2.getIdIndice());
+                    arq2.writeLong(ic2.getPosiIndice());
+                    arq2.writeUTF(ic2.getLapide());
+                    contadorPontarq4++;
+                    if (contadorPontarq4 < tamanhoCaminho) {
+                      ic2.setIdIndice(arq4.readShort());
+                      ic2.setPosiIndice(arq4.readLong());
+                      ic2.setLapide(arq4.readUTF());
+                    }
+
+                  }
+                }
+                ultimoSavearq1 = false;
+                ultimoSavearq2 = true;
+                ultimoSavearq3 = false;
+                ultimoSavearq4 = false;
+                contador1++;
+              } else {
+
+                int tamanhoCaminhoIncompleto3 = (int) tamanhoArq3;
+                int novoContador = 0;
+                while (novoContador < tamanhoCaminhoIncompleto3) {
+
+                  ic.setIdIndice(arq3.readShort());
+                  ic.setPosiIndice(arq3.readLong());
+                  ic.setLapide(arq3.readUTF());
+
+                  arq2.writeShort(ic.getIdIndice());
+                  arq2.writeLong(ic.getPosiIndice());
+                  arq2.writeUTF(ic.getLapide());
+
+                  novoContador++;
+                }
+                contador1++;
+                ultimoSavearq1 = false;
+                ultimoSavearq2 = true;
+                ultimoSavearq3 = false;
+                ultimoSavearq4 = false;
+              }
+            }
+          }
+
+        }
+
+        contador3++;
+      }
+      arq1.close();
+      arq2.close();
+      arq3.close();
+      arq4.close();
+    } catch (
+
+    Exception e) {
+      String error = e.getMessage();
+      System.out.println("Erro: " + error);
+    }
+
+    // essa parte abaixo pega o ultimo arquivo que foi salvo algo na ordenação
+    // externa e copia para o arquivo aindices para ser feito a pesquisa.
+    try {
+      RandomAccessFile arqIndice = new RandomAccessFile("src/database/aindices.db", "rw");
+      if (ultimoSavearq1 == true) {
+
+        RandomAccessFile arq1 = new RandomAccessFile("src/database/arq1.db", "rw");
+        long tamanhoArq1 = arq1.length();
+        int tam = (int) tamanhoArq1;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq1.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq1.close();
+      }
+
+      if (ultimoSavearq2 == true) {
+
+        RandomAccessFile arq2 = new RandomAccessFile("src/database/arq2.db", "rw");
+        long tamanhoArq2 = arq2.length();
+        int tam = (int) tamanhoArq2;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq2.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq2.close();
+      }
+
+      if (ultimoSavearq3 == true) {
+
+        RandomAccessFile arq3 = new RandomAccessFile("src/database/arq3.db", "rw");
+        long tamanhoArq3 = arq3.length();
+        int tam = (int) tamanhoArq3;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq3.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq3.close();
+      }
+
+      if (ultimoSavearq4 == true) {
+
+        RandomAccessFile arq4 = new RandomAccessFile("src/database/arq4.db", "rw");
+        long tamanhoArq4 = arq4.length();
+        int tam = (int) tamanhoArq4;
+        byte[] ba;
+        ba = new byte[tam];
+        // copiarTodosOsBytesdoArq(ba, arq1, tam);
+        arq4.read(ba);
+        arqIndice.seek(0);
+        arqIndice.write(ba);
+        arq4.close();
+      }
+
+      arqIndice.close();
+    } catch (Exception e) {
+      String error = e.getMessage();
+      System.out.println("Erro na finalização da OE: " + error);
+    }
+
+  }

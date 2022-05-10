@@ -2,8 +2,9 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.4.7.3]
+## Melhorias Versão [0.4.7.4]
 
+- Continua com o mesmo erros porém o código foi reescrito.
 - O arquivo agora pega o ultimo arquivo ordenado e salva no aindice.db
 - OBS: O arquivo só está ordenando quando os caminhos estão completos.
  
