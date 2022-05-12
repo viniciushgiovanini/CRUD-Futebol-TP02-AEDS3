@@ -922,8 +922,7 @@ public class ordenacaoexterna {
       arq2.close();
       arq3.close();
       arq4.close();
-      // ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3,
-      // ultimoSavearq4);
+      ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3, ultimoSavearq4);
     } catch (Exception e) {
       String error = e.getMessage();
       System.out.println("Erro na finalização da OE: " + error);

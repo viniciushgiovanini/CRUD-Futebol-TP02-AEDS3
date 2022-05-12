@@ -5,6 +5,35 @@ import java.io.PrintWriter;
 
 public class arquivocrud {
 
+  private boolean precisaOrdernar = false;
+
+  public boolean getPrecisaOrdernar() {
+    return precisaOrdernar;
+  }
+
+  public void salvarPrecisaOrdernar(int op) {
+    // op 1 guarda a variavel no arquivo
+    // op 2 pega a variavel no arquivo
+
+    try {
+      RandomAccessFile arq = new RandomAccessFile("src/database/precisaOrdernar.db", "rw");
+
+      if (op == 1) {
+        arq.seek(0);
+        arq.writeBoolean(precisaOrdernar);
+      } else {
+        if (op == 2) {
+          arq.seek(0);
+          this.precisaOrdernar = arq.readBoolean();
+        }
+      }
+      arq.close();
+    } catch (Exception e) {
+      System.out.println("Erro no salvarPrecisaOrdernar: " + e.getCause());
+    }
+
+  }
+
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
@@ -115,7 +144,7 @@ public class arquivocrud {
       }
 
     }
-
+    precisaOrdernar = true;
     System.out.println("------X------");
     System.out.println(ft.toString());
 
@@ -148,9 +177,10 @@ public class arquivocrud {
       escreverArquivo(ft);
     } else {
       System.out.println("\nArquivo com o Campo nome vazio não é possivel ser escrito !\n");
+      precisaOrdernar = false;
       return;
     }
-
+    precisaOrdernar = true;
   }
 
   // -------------------Create - FIM---------------------------------//
@@ -163,6 +193,27 @@ public class arquivocrud {
   // ja testa se o arquivo está deletado ou não. OBS esse método só faz a procura
   // de números.
   // --------------------------------------
+
+  public boolean temMargemZero() {
+    boolean r = false;
+    try {
+
+      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "r");
+
+      arq.seek(arq.length() - 13);
+      short temShort = arq.readShort();
+
+      if (temShort == 0) {
+        r = true;
+      }
+
+      arq.close();
+    } catch (Exception e) {
+      System.out.println("Erro na function temMargemZero: " + e.getCause());
+    }
+    return r;
+  }
+
   public long pesquisaBinariaArquivoIndice(int n) {
     long posicaoRetorno = -1;
 
@@ -173,21 +224,34 @@ public class arquivocrud {
 
         arq.seek(0);
         int esq = arq.readShort();
-        int qtdElementos = (int) arq.length() / 10;
-        arq.seek(arq.length() - 10);
+        int qtdElementos = (int) arq.length() / 13;
+
+        if (temMargemZero()) {
+          arq.seek(arq.length() - 26);
+          qtdElementos -= 1;
+        } else {
+          arq.seek(arq.length() - 13);
+        }
+
         int dir = arq.readShort();
+
         int mid = (esq + dir) / 2;
         arq.seek(0);
-
+        int midSekk = 0;
         while (esq <= dir) {
           mid = (esq + dir) / 2;
-          arq.seek(mid * 10);// Para chegar no numero desejado é so pegar o numero e X 10, pois cada 1
-                             // registro nesse arquivo de incide ocupa 10 bytes 2short e 8 do long,
-                             // respectivo ao ID e ao Endereço dele.
+
+          if (mid != 0) {
+            midSekk = mid - 1;
+            arq.seek(midSekk * 13);
+          } else {
+            arq.seek(mid * 13);
+          }
+
           int numerodoMeio = arq.readShort();
           if (n == numerodoMeio) {
             posicaoRetorno = arq.readLong();
-            esq = qtdElementos;
+            esq = qtdElementos + 1;
           } else if (n > numerodoMeio) {
 
             esq = mid + 1;
@@ -239,7 +303,11 @@ public class arquivocrud {
     ordenacaoexterna oe = new ordenacaoexterna();
 
     if (idOrnot == true) {// Inicio Pesquisa Númerica
-      oe.ordenacaoDistribuicao();
+
+      if (precisaOrdernar == true) {
+        oe.ordenacaoDistribuicao();
+      }
+
       int entradaInt = Integer.parseInt(recebendo);
       retornoPesquisa = pesquisaBinariaArquivoIndice(entradaInt);// chama a pesquisa binária
 
@@ -284,6 +352,7 @@ public class arquivocrud {
         }
       }
     } // aqui provavelmente vai ter que ser implementado a lista invertida.
+    precisaOrdernar = false;
     return retornoPesquisa;
   }
 

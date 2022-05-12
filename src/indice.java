@@ -63,6 +63,7 @@ public class indice {
     try {
       RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
       long tamdoArq = arq.length();
+      arquivocrud arqcru = new arquivocrud();
 
       if (tamdoArq == 0) {
 
@@ -74,23 +75,34 @@ public class indice {
 
       } else {
         boolean ePar = true;
-        if ((idIndice) % 2 == 1) {
-          ePar = false;
-        }
 
-        if (ePar) {
-          arq.seek(tamdoArq + 13);
+        if (arqcru.temMargemZero() == true) {
+
+          arq.seek(tamdoArq - 13);
           arq.writeShort(idIndice);
           arq.writeLong(posiIndice);
           arq.writeUTF(lapide);
+
         } else {
-          arq.seek(tamdoArq - 26);
-          // System.out.println(arq.getFilePointer());
-          arq.writeShort(idIndice);
-          arq.writeLong(posiIndice);
-          arq.writeUTF(lapide);
-        }
 
+          if ((idIndice) % 2 == 1) {
+            ePar = false;
+          }
+
+          if (!ePar) {
+            arq.seek(tamdoArq + 13);
+            arq.writeShort(idIndice);
+            arq.writeLong(posiIndice);
+            arq.writeUTF(lapide);
+          } else {
+            arq.seek(tamdoArq - 26);
+            // System.out.println(arq.getFilePointer());
+            arq.writeShort(idIndice);
+            arq.writeLong(posiIndice);
+            arq.writeUTF(lapide);
+          }
+
+        }
       }
       /*
        * para salvar o indice sequencialmente de forma crescente

@@ -128,10 +128,10 @@ public class futebolprincipal {
 
   public static void main(String[] args) {
     Scanner entrada = new Scanner(System.in);
-
     arquivocrud arqcru = new arquivocrud();
     fut futebas = new fut();
 
+    arqcru.salvarPrecisaOrdernar(2);
     String menuStr = "";
     byte menu = 0;
     byte zero = 0;
@@ -156,6 +156,7 @@ public class futebolprincipal {
         switch (menu) {
           case 0:
             contador = true;
+            arqcru.salvarPrecisaOrdernar(1);
             System.out.println("Encerrando o programa...");
             break;
           case 1:

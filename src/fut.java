@@ -3,7 +3,7 @@ import java.io.*;
 public class fut {
 
   private String lapide = " ";
-  private short idClube = 0;
+  private short idClube = 1;
   private String nome = "";
   private String cnpj = "";
   private String cidade = "";
@@ -12,7 +12,7 @@ public class fut {
 
   public fut() {// Método Construtor 1
     lapide = " ";
-    idClube = -1;
+    idClube = 0;
     nome = " ";
     cnpj = " ";
     cidade = " ";
@@ -23,7 +23,7 @@ public class fut {
 
   public fut(String nomeC, String cnpjC, String cidadeC) {// Método Contrutor 2
     lapide = " ";
-    idClube = -1;
+    idClube = 0;
     nome = nomeC;
     cnpj = cnpjC;
     cidade = cidadeC;
