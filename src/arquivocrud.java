@@ -187,13 +187,6 @@ public class arquivocrud {
 
   // ----------------------READ-------------------------//
 
-  // --------------------------------------
-  // Método pesquisaBinariaArquivoIndice faz a busca binaria no arquivo de
-  // indices, dessa forma retornando a posicao long no arquivo de dados, e logo
-  // ja testa se o arquivo está deletado ou não. OBS esse método só faz a procura
-  // de números.
-  // --------------------------------------
-
   public boolean temMargemZero() {
     boolean r = false;
     try {
@@ -214,9 +207,15 @@ public class arquivocrud {
     return r;
   }
 
+  // --------------------------------------
+  // Método pesquisaBinariaArquivoIndice faz a busca binaria no arquivo de
+  // indices, dessa forma retornando a posicao long no arquivo de dados, e logo
+  // ja testa se o arquivo está deletado ou não. OBS esse método só faz a procura
+  // de números.
+  // --------------------------------------
   public long pesquisaBinariaArquivoIndice(int n) {
     long posicaoRetorno = -1;
-
+    String lapide = "*";
     try {
       RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "r");
 
@@ -251,6 +250,11 @@ public class arquivocrud {
           int numerodoMeio = arq.readShort();
           if (n == numerodoMeio) {
             posicaoRetorno = arq.readLong();
+            String testelapide = arq.readUTF();
+
+            if (testelapide.equals(lapide)) {
+              posicaoRetorno = -1;
+            }
             esq = qtdElementos + 1;
           } else if (n > numerodoMeio) {
 
@@ -332,6 +336,8 @@ public class arquivocrud {
             retornoPesquisa = -1;
           }
 
+          arq.close();
+
         } catch (Exception e) {
           String erro = e.getMessage();
 
@@ -351,7 +357,9 @@ public class arquivocrud {
 
         }
       }
+
     } // aqui provavelmente vai ter que ser implementado a lista invertida.
+
     precisaOrdernar = false;
     return retornoPesquisa;
   }
@@ -369,12 +377,13 @@ public class arquivocrud {
   // ----------------------Delete-------------------------//
   public void arquivoDelete(String id, Scanner verificarultimoDelete, fut ft2) {
 
-    RandomAccessFile arq;
+    RandomAccessFile arqP;
+    RandomAccessFile arqIndice;
     String lapide = "";
     boolean arquivoDeletado = false;
     try {
-      arq = new RandomAccessFile("src/database/futebol.db", "rw");
-
+      arqP = new RandomAccessFile("src/database/futebol.db", "rw");
+      arqIndice = new RandomAccessFile("src/database/aindices.db", "rw");
       long idExist = procurarClube(id, ft2);
 
       if (idExist >= 0) {
@@ -385,10 +394,13 @@ public class arquivocrud {
         String ultVeri = verificarultimoDelete.nextLine();
 
         if ((ultVeri.toLowerCase().equals("sim") == true)) {
-          arq.seek(idExist + 6);
+          arqP.seek(idExist + 6);
+          arqIndice.seek(ft2.getIdClube() * 10);
           lapide = "*";
-          // System.out.println(arq.getFilePointer());
-          arq.writeUTF(lapide);
+          // System.out.println(arqP.getFilePointer());
+          // System.out.println(arqIndice.getFilePointer());
+          arqP.writeUTF(lapide);
+          arqIndice.writeUTF(lapide);
           arquivoDeletado = true;
         } else {
           System.out.println("Registro não Deletado");
