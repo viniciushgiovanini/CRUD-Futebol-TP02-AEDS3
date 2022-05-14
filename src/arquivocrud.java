@@ -6,9 +6,14 @@ import java.io.PrintWriter;
 public class arquivocrud {
 
   private boolean precisaOrdernar = false;
+  private boolean precisaEmbaralhar = true;
 
   public boolean getPrecisaOrdernar() {
     return precisaOrdernar;
+  }
+
+  public boolean getPrecisaEmbaralhar() {
+    return precisaEmbaralhar;
   }
 
   public void salvarPrecisaOrdernar(int op) {
@@ -34,12 +39,46 @@ public class arquivocrud {
 
   }
 
+  public void salvarPrecisaEmbaralhar(int op) {
+    try {
+      RandomAccessFile arq = new RandomAccessFile("src/database/precisaEmbaralhar.db", "rw");
+
+      if (op == 1) {
+        arq.seek(0);
+        arq.writeBoolean(precisaEmbaralhar);
+      } else {
+        if (op == 2) {
+          arq.seek(0);
+
+          if (arq.length() == 0) {
+            arq.seek(0);
+            arq.writeBoolean(precisaEmbaralhar);
+            arq.seek(0);
+          }
+
+          this.precisaEmbaralhar = arq.readBoolean();
+        }
+      }
+      arq.close();
+    } catch (Exception e) {
+      System.out.println("Erro no salvarPrecisaEmprecisaEmbaralhar: " + e.getCause());
+    }
+
+  }
+
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
   public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4) {
 
     try {
+
+      PrintWriter precisaEmb = new PrintWriter("src/database/precisaEmbaralhar.db");
+      PrintWriter PrecisaOrd = new PrintWriter("src/database/precisaOrdernar.db");
+      precisaEmb.print("");
+      precisaEmb.close();
+      PrecisaOrd.print("");
+      PrecisaOrd.close();
 
       if (valor == 1) {
         PrintWriter writer = new PrintWriter("src/database/futebol.db");
@@ -132,7 +171,12 @@ public class arquivocrud {
       // local que faz a escrita no arquivo
       ic.setIdIndice(idcabecalhosave);
       ic.setPosiIndice(posiIndice);
-      ic.writeIndicetoArq();
+      salvarPrecisaEmbaralhar(2);
+      if (precisaEmbaralhar) {
+        ic.writeIndicetoArq(precisaEmbaralhar);
+      } else {
+        ic.writeIndicetoArq(precisaEmbaralhar);
+      }
 
     } catch (Exception e) {
       String erro = e.getMessage();
@@ -213,59 +257,121 @@ public class arquivocrud {
   // ja testa se o arquivo está deletado ou não. OBS esse método só faz a procura
   // de números.
   // --------------------------------------
-  public long pesquisaBinariaArquivoIndice(int n) {
+  public long pesquisaBinariaArquivoIndice(int n, boolean retornarArqIndiceOuDados) {
+
+    // se for para retornar posicao do arquivo de dados é 1, se for do proprio
+    // arquivo de indice é 0;
+
     long posicaoRetorno = -1;
     String lapide = "*";
     try {
       RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "r");
 
-      if (arq.length() != 0) {
+      if (retornarArqIndiceOuDados) {// pegar o indice que ta salvar aqui junto com a lapide e o id entao o indice é
+                                     // referente ao arquivo de dados.
 
-        arq.seek(0);
-        int esq = arq.readShort();
-        int qtdElementos = (int) arq.length() / 13;
+        if (arq.length() != 0) {
 
-        if (temMargemZero()) {
-          arq.seek(arq.length() - 26);
-          qtdElementos -= 1;
-        } else {
-          arq.seek(arq.length() - 13);
-        }
+          arq.seek(0);
+          int esq = arq.readShort();
+          int qtdElementos = (int) arq.length() / 13;
 
-        int dir = arq.readShort();
-
-        int mid = (esq + dir) / 2;
-        arq.seek(0);
-        int midSekk = 0;
-        while (esq <= dir) {
-          mid = (esq + dir) / 2;
-
-          if (mid != 0) {
-            midSekk = mid - 1;
-            arq.seek(midSekk * 13);
+          if (temMargemZero()) {
+            arq.seek(arq.length() - 26);
+            qtdElementos -= 1;
           } else {
-            arq.seek(mid * 13);
+            arq.seek(arq.length() - 13);
           }
 
-          int numerodoMeio = arq.readShort();
-          if (n == numerodoMeio) {
-            posicaoRetorno = arq.readLong();
-            String testelapide = arq.readUTF();
+          int dir = arq.readShort();
 
-            if (testelapide.equals(lapide)) {
-              posicaoRetorno = -1;
+          int mid = (esq + dir) / 2;
+          arq.seek(0);
+          int midSekk = 0;
+          while (esq <= dir) {
+            mid = (esq + dir) / 2;
+
+            if (mid != 0) {
+              midSekk = mid - 1;
+
+              arq.seek(midSekk * 13);
+
+            } else {
+              arq.seek(mid * 13);
             }
-            esq = qtdElementos + 1;
-          } else if (n > numerodoMeio) {
 
-            esq = mid + 1;
-          } else {
-            dir = mid - 1;
+            int numerodoMeio = arq.readShort();
+
+            if (n == numerodoMeio) {
+              posicaoRetorno = arq.readLong();
+              String testelapide = arq.readUTF();
+
+              if (testelapide.equals(lapide)) {
+                posicaoRetorno = -1;
+              }
+              esq = qtdElementos + 1;
+            } else if (n > numerodoMeio) {
+
+              esq = mid + 1;
+            } else {
+              dir = mid - 1;
+            }
           }
+        } else {
+          System.out.println("ERROR: O arquivo de busca se encontra vazio !");
+          posicaoRetorno = -10;
         }
+
       } else {
-        System.out.println("ERROR: O arquivo de busca se encontra vazio !");
-        posicaoRetorno = -10;
+        if (arq.length() != 0) {
+
+          arq.seek(0);
+          int esq = arq.readShort();
+          int qtdElementos = (int) arq.length() / 13;
+
+          if (temMargemZero()) {
+            arq.seek(arq.length() - 26);
+            qtdElementos -= 1;
+          } else {
+            arq.seek(arq.length() - 13);
+          }
+
+          int dir = arq.readShort();
+
+          int mid = (esq + dir) / 2;
+          arq.seek(0);
+          int midSekk = 0;
+          while (esq <= dir) {
+            mid = (esq + dir) / 2;
+
+            if (mid != 0) {
+              midSekk = mid - 1;
+              arq.seek(midSekk * 13);
+            } else {
+              arq.seek(mid * 13);
+            }
+
+            int numerodoMeio = arq.readShort();
+            if (n == numerodoMeio) {
+              posicaoRetorno = arq.getFilePointer() - 2;
+              String testelapide = arq.readUTF();
+
+              if (testelapide.equals(lapide)) {
+                posicaoRetorno = -1;
+              }
+              esq = qtdElementos + 1;
+            } else if (n > numerodoMeio) {
+
+              esq = mid + 1;
+            } else {
+              dir = mid - 1;
+            }
+          }
+
+        } else {
+          System.out.println("ERROR: O arquivo de busca se encontra vazio !");
+          posicaoRetorno = -10;
+        }
       }
 
       arq.close();
@@ -284,6 +390,7 @@ public class arquivocrud {
     }
 
     return posicaoRetorno;
+    // pesquisa para retornar a posicao do id procurado no arquivo de indice
 
   }
 
@@ -313,7 +420,7 @@ public class arquivocrud {
       }
 
       int entradaInt = Integer.parseInt(recebendo);
-      retornoPesquisa = pesquisaBinariaArquivoIndice(entradaInt);// chama a pesquisa binária
+      retornoPesquisa = pesquisaBinariaArquivoIndice(entradaInt, true);// chama a pesquisa binária
 
       byte[] ba;
       RandomAccessFile arq;
@@ -446,6 +553,7 @@ public class arquivocrud {
      */
 
     RandomAccessFile arq;
+    RandomAccessFile arqIndi;
 
     if (tipoDeUpdate.equals("Completo")) {
       fut ft2 = new fut();
@@ -464,6 +572,7 @@ public class arquivocrud {
 
           try {
             arq = new RandomAccessFile("src/database/futebol.db", "rw");
+            arqIndi = new RandomAccessFile("src/database/aindices.db", "rw");
             arq.seek(receberProcura);
             int tamanhoArquivoVelho = arq.readInt();
 
@@ -496,6 +605,7 @@ public class arquivocrud {
               arq.seek(0);
               // peganto tam total do arq
               long tamanhoTotalArq = arq.length();
+              long longArquivoIndice = tamanhoTotalArq;
               // pegando Id do cabecalho
               arq.seek(0);
               Short pegarPrimeiroId = 0;
@@ -511,6 +621,7 @@ public class arquivocrud {
               arq.seek(0);
               arq.seek(tamanhoTotalArq);
               pegarPrimeiroId++;
+              short salvarIdnoIndice = pegarPrimeiroId;
               ft2.setIdClube(pegarPrimeiroId);
 
               ba = ft2.toByteArray();
@@ -520,6 +631,22 @@ public class arquivocrud {
               arq.seek(0);
               arq.writeShort(pegarPrimeiroId);
 
+              // mudar registro no arquivo de indice
+              int convertIdStringtoInt = Integer.parseInt(nomeidProcurado);
+              long receberPosiArqIndice = pesquisaBinariaArquivoIndice(convertIdStringtoInt, false);
+
+              arqIndi.seek(receberPosiArqIndice + 10);
+              arqIndi.writeUTF("*");
+
+              if (temMargemZero()) {
+                arqIndi.seek(arqIndi.length() - 13);
+              } else {
+                arqIndi.seek(arqIndi.length());
+              }
+              arqIndi.writeShort(salvarIdnoIndice);
+              arqIndi.writeLong(longArquivoIndice);
+              arqIndi.writeUTF(" ");
+              precisaEmbaralhar = false;
               System.out.println("Arquivo Atualizado com Sucesso !");
             }
 

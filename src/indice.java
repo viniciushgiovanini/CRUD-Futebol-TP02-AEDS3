@@ -46,7 +46,7 @@ public class indice {
 
   // faz a escrita do indice no arquivo de maneira desordenada(inserir
   // clube/create)
-  public void writeIndicetoArq() {
+  public void writeIndicetoArq(boolean precisaEmbaralhar) {
 
     // -------------------Create---------------------------------//
     // --------------------------------------
@@ -65,45 +65,55 @@ public class indice {
       long tamdoArq = arq.length();
       arquivocrud arqcru = new arquivocrud();
 
-      if (tamdoArq == 0) {
+      if (precisaEmbaralhar) {
+        if (tamdoArq == 0) {
 
-        tamdoArq = 13;
-        arq.seek(tamdoArq);
-        arq.writeShort(idIndice);
-        arq.writeLong(posiIndice);
-        arq.writeUTF(lapide);
-
-      } else {
-        boolean ePar = true;
-
-        if (arqcru.temMargemZero() == true) {
-
-          arq.seek(tamdoArq - 13);
+          tamdoArq = 13;
+          arq.seek(tamdoArq);
           arq.writeShort(idIndice);
           arq.writeLong(posiIndice);
           arq.writeUTF(lapide);
 
         } else {
+          boolean ePar = true;
 
-          if ((idIndice) % 2 == 1) {
-            ePar = false;
-          }
+          if (arqcru.temMargemZero() == true) {
 
-          if (!ePar) {
-            arq.seek(tamdoArq + 13);
+            arq.seek(tamdoArq - 13);
             arq.writeShort(idIndice);
             arq.writeLong(posiIndice);
             arq.writeUTF(lapide);
+
           } else {
-            arq.seek(tamdoArq - 26);
-            // System.out.println(arq.getFilePointer());
-            arq.writeShort(idIndice);
-            arq.writeLong(posiIndice);
-            arq.writeUTF(lapide);
-          }
 
+            if ((idIndice) % 2 == 1) {
+              ePar = false;
+            }
+
+            if (!ePar) {
+              arq.seek(tamdoArq + 13);
+              arq.writeShort(idIndice);
+              arq.writeLong(posiIndice);
+              arq.writeUTF(lapide);
+            } else {
+              arq.seek(tamdoArq - 26);
+              // System.out.println(arq.getFilePointer());
+              arq.writeShort(idIndice);
+              arq.writeLong(posiIndice);
+              arq.writeUTF(lapide);
+            }
+
+          }
         }
+      } else {
+
+        arq.seek(arq.length());
+        arq.writeShort(idIndice);
+        arq.writeLong(posiIndice);
+        arq.writeUTF(lapide);
+
       }
+
       /*
        * para salvar o indice sequencialmente de forma crescente
        * arq.seek(tamdoArq);

@@ -169,6 +169,7 @@ public class futebolprincipal {
           case 0:
             contador = true;
             arqcru.salvarPrecisaOrdernar(1);
+            arqcru.salvarPrecisaEmbaralhar(1);
             System.out.println("Encerrando o programa...");
             break;
           case 1:

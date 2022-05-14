@@ -2,9 +2,9 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.6]
+## Melhorias Versão [0.6.5]
 
-- Delete Funcionando no arquivo de dados e no de indice.
+- Update funcionando porém quando faz o primeiro update o embaralhamento para de funcionar e vira insercao ordernada.
 - O arquivo realiza ordenacao e pesquisa com OE. Não foi testado quando a OE tenta ordenar mais de 80 caracteres correspondendte ao ar1 2 3 e 4 cheios tendo que alocar no arq 1 novamente.
   
 
