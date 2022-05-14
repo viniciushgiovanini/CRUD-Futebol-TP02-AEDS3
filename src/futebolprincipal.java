@@ -32,46 +32,58 @@ public class futebolprincipal {
     if (retornoTimeUm >= 0) {
       long retornoTimeDois = arq.procurarClube(timeDois, time2);
 
-      if (retornoTimeDois >= 0) {
+      System.out.println(time1.toString());
+      System.out.println(time2.toString());
 
-        short placarTimeUm = 0;
-        short placarTimeDois = 0;
-        byte pontos = 0;
+      String confirmartimes;
+      System.out.println("Confirma que esses são os times que deseja realizar uma partida ? (sim ou nao)");
+      confirmartimes = entrada.nextLine();
 
-        System.out.println("Digite o placar do Contronto entre o primeiro time e o segundo !");
-        System.out.print("Gols Time " + timeUm + ": ");
-        placarTimeUm = entrada.nextShort();
-        System.out.println();
-        System.out.print("Gols Time " + timeDois + ": ");
-        placarTimeDois = entrada.nextShort();
+      if (confirmartimes.toLowerCase().equals("sim")) {
 
-        if (placarTimeUm > placarTimeDois) {
+        if (retornoTimeDois >= 0) {
 
-          pontos = 3;
-          status = arq.arquivoUpdate(timeUm, entrada, "Parcial", pontos, time1);
-          pontos = 0;
-          status2 = arq.arquivoUpdate(timeDois, entrada, "Parcial", pontos, time2);
+          short placarTimeUm = 0;
+          short placarTimeDois = 0;
+          byte pontos = 0;
 
-        } else {
-          pontos = 3;
-          if (placarTimeUm < placarTimeDois) {
+          System.out.println("Digite o placar do Contronto entre o primeiro time e o segundo !");
+          System.out.print("Gols Time " + timeUm + ": ");
+          placarTimeUm = entrada.nextShort();
+          System.out.println();
+          System.out.print("Gols Time " + timeDois + ": ");
+          placarTimeDois = entrada.nextShort();
+
+          if (placarTimeUm > placarTimeDois) {
+
             pontos = 3;
-            status = arq.arquivoUpdate(timeDois, entrada, "Parcial", pontos, time2);
+            status = arq.arquivoUpdate(timeUm, entrada, "Parcial", pontos, time1);
             pontos = 0;
-            status2 = arq.arquivoUpdate(timeUm, entrada, "Parcial", pontos, time1);
+            status2 = arq.arquivoUpdate(timeDois, entrada, "Parcial", pontos, time2);
+
           } else {
-            pontos = 1;
-            if (placarTimeUm == placarTimeDois) {
-              status = arq.arquivoUpdate(timeUm, entrada, "Parcial", pontos, time1);
-              status2 = arq.arquivoUpdate(timeDois, entrada, "Parcial", pontos, time2);
+            pontos = 3;
+            if (placarTimeUm < placarTimeDois) {
+              pontos = 3;
+              status = arq.arquivoUpdate(timeDois, entrada, "Parcial", pontos, time2);
+              pontos = 0;
+              status2 = arq.arquivoUpdate(timeUm, entrada, "Parcial", pontos, time1);
+            } else {
+              pontos = 1;
+              if (placarTimeUm == placarTimeDois) {
+                status = arq.arquivoUpdate(timeUm, entrada, "Parcial", pontos, time1);
+                status2 = arq.arquivoUpdate(timeDois, entrada, "Parcial", pontos, time2);
+              }
             }
+
           }
+        } else {
+          System.out.println("Realização de partida CANCELADA, time 2 não encontrado");
 
+          retorno = false;
         }
-
       } else {
-        System.out.println("Realização de partida CANCELADA, time 2 não encontrado");
-
+        System.out.println("Partida Cancelada");
         retorno = false;
       }
 
