@@ -6,15 +6,16 @@ import java.io.PrintWriter;
 public class arquivocrud {
 
   private boolean precisaOrdernar = false;
-  private boolean precisaEmbaralhar = true;
 
   public boolean getPrecisaOrdernar() {
     return precisaOrdernar;
   }
 
-  public boolean getPrecisaEmbaralhar() {
-    return precisaEmbaralhar;
+  public void setPrecisarOrdenar(boolean precisaOrdernar) {
+    this.precisaOrdernar = precisaOrdernar;
   }
+
+  // ----------------------------------------X----------------------------------------//
 
   public void salvarPrecisaOrdernar(int op) {
     // op 1 guarda a variavel no arquivo
@@ -39,46 +40,12 @@ public class arquivocrud {
 
   }
 
-  public void salvarPrecisaEmbaralhar(int op) {
-    try {
-      RandomAccessFile arq = new RandomAccessFile("src/database/precisaEmbaralhar.db", "rw");
-
-      if (op == 1) {
-        arq.seek(0);
-        arq.writeBoolean(precisaEmbaralhar);
-      } else {
-        if (op == 2) {
-          arq.seek(0);
-
-          if (arq.length() == 0) {
-            arq.seek(0);
-            arq.writeBoolean(precisaEmbaralhar);
-            arq.seek(0);
-          }
-
-          this.precisaEmbaralhar = arq.readBoolean();
-        }
-      }
-      arq.close();
-    } catch (Exception e) {
-      System.out.println("Erro no salvarPrecisaEmprecisaEmbaralhar: " + e.getCause());
-    }
-
-  }
-
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
   public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4) {
 
     try {
-
-      PrintWriter precisaEmb = new PrintWriter("src/database/precisaEmbaralhar.db");
-      PrintWriter PrecisaOrd = new PrintWriter("src/database/precisaOrdernar.db");
-      precisaEmb.print("");
-      precisaEmb.close();
-      PrecisaOrd.print("");
-      PrecisaOrd.close();
 
       if (valor == 1) {
         PrintWriter writer = new PrintWriter("src/database/futebol.db");
@@ -171,12 +138,7 @@ public class arquivocrud {
       // local que faz a escrita no arquivo
       ic.setIdIndice(idcabecalhosave);
       ic.setPosiIndice(posiIndice);
-      salvarPrecisaEmbaralhar(2);
-      if (precisaEmbaralhar) {
-        ic.writeIndicetoArq(precisaEmbaralhar);
-      } else {
-        ic.writeIndicetoArq(precisaEmbaralhar);
-      }
+      ic.writeIndicetoArq();
 
     } catch (Exception e) {
       String erro = e.getMessage();
@@ -221,7 +183,6 @@ public class arquivocrud {
       escreverArquivo(ft);
     } else {
       System.out.println("\nArquivo com o Campo nome vazio não é possivel ser escrito !\n");
-      precisaOrdernar = false;
       return;
     }
     precisaOrdernar = true;
@@ -303,6 +264,7 @@ public class arquivocrud {
             int numerodoMeio = arq.readShort();
 
             if (n == numerodoMeio) {
+
               posicaoRetorno = arq.readLong();
               String testelapide = arq.readUTF();
 
@@ -506,6 +468,9 @@ public class arquivocrud {
           lapide = "*";
           // System.out.println(arqP.getFilePointer());
           // System.out.println(arqIndice.getFilePointer());
+          int convertIdstrtoInt = Integer.parseInt(id);
+          long receberPosiArqIndice = pesquisaBinariaArquivoIndice(convertIdstrtoInt, false);
+          arqIndice.seek(receberPosiArqIndice + 10);
           arqP.writeUTF(lapide);
           arqIndice.writeUTF(lapide);
           arquivoDeletado = true;
@@ -557,6 +522,7 @@ public class arquivocrud {
 
     if (tipoDeUpdate.equals("Completo")) {
       fut ft2 = new fut();
+      indice idc;
       long receberProcura = procurarClube(nomeidProcurado, ft2);
       byte[] ba;
       String stgConfirma = "";
@@ -638,15 +604,12 @@ public class arquivocrud {
               arqIndi.seek(receberPosiArqIndice + 10);
               arqIndi.writeUTF("*");
 
-              if (temMargemZero()) {
-                arqIndi.seek(arqIndi.length() - 13);
-              } else {
-                arqIndi.seek(arqIndi.length());
-              }
-              arqIndi.writeShort(salvarIdnoIndice);
-              arqIndi.writeLong(longArquivoIndice);
-              arqIndi.writeUTF(" ");
-              precisaEmbaralhar = false;
+              idc = new indice();
+              idc.setIdIndice(salvarIdnoIndice);
+              idc.setPosiIndice(longArquivoIndice);
+              idc.setLapide(" ");
+              idc.writeIndicetoArq();
+              precisaOrdernar = true;
               System.out.println("Arquivo Atualizado com Sucesso !");
             }
 
