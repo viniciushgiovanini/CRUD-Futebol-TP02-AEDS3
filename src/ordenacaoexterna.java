@@ -19,7 +19,8 @@ public class ordenacaoexterna {
   }
 
   public static boolean corrigirArquivoIndice() {
-
+    // essa explicacao agora tem que ser feita pois nao existe registro comecando em
+    // 0 e sim em 1
     // 0_________1___"0"____2________3_________4
     // Para embaralhar e a ordenacao fazer sentido eu mudei a ordem de escrita,
     // então se escreve primeiros números impares e depois numeros pares, porém já
@@ -77,7 +78,7 @@ public class ordenacaoexterna {
   // FUNCOES DE APOIO ORDENACAO EXTERNA
 
   public static boolean ordernar1e2para3(RandomAccessFile arq1, RandomAccessFile arq2, RandomAccessFile arq3,
-      int tamCaminho) {
+      int tamCaminho, int contadorPRINCIPAL) {
     boolean ultimoSavearq3 = false;
     try {
       indice ic = new indice();
@@ -164,8 +165,15 @@ public class ordenacaoexterna {
           int tamanhoCaminhoIncompleto1 = (int) arq1.length();
           tamanhoCaminhoIncompleto1 /= 13;
 
-          if (tamanhoCaminhoIncompleto1 != tamCaminho) {
-            tamanhoCaminhoIncompleto1 -= tamCaminho;
+          if (tamanhoCaminhoIncompleto1 > tamCaminho) {
+
+            if (tamanhoCaminhoIncompleto1 != tamCaminho
+                && (tamanhoCaminhoIncompleto1 < (tamCaminho * contadorPRINCIPAL))) {
+              tamanhoCaminhoIncompleto1 = tamanhoCaminhoIncompleto1 - (tamCaminho * (contadorPRINCIPAL - 1));
+            } else {
+              tamanhoCaminhoIncompleto1 = tamCaminho;
+            }
+
           }
           while (contardorPonteiroArq1 < (tamanhoCaminhoIncompleto1)) {
             arq3.writeShort(ic.getIdIndice());
@@ -182,11 +190,18 @@ public class ordenacaoexterna {
 
         } else if (contardorPonteiroArq2 != tamCaminho) {
           int tamanhoCaminhoIncompleto2 = (int) arq2.length();
-          tamanhoCaminhoIncompleto2 /= 13;
 
-          if (tamanhoCaminhoIncompleto2 != tamCaminho) {
-            tamanhoCaminhoIncompleto2 -= tamCaminho;
+          tamanhoCaminhoIncompleto2 /= 13;
+          if (tamanhoCaminhoIncompleto2 > tamCaminho) {
+            if (tamanhoCaminhoIncompleto2 != tamCaminho
+                && (tamanhoCaminhoIncompleto2 < (tamCaminho * contadorPRINCIPAL))) {
+              tamanhoCaminhoIncompleto2 = tamanhoCaminhoIncompleto2 - (tamCaminho * (contadorPRINCIPAL - 1));
+
+            } else {
+              tamanhoCaminhoIncompleto2 = tamCaminho;
+            }
           }
+
           long tamArq3 = arq3.length();
           arq3.seek(tamArq3);
           while (contardorPonteiroArq2 < (tamanhoCaminhoIncompleto2)) {
@@ -233,7 +248,7 @@ public class ordenacaoexterna {
   }
 
   public static boolean ordernar1e2para4(RandomAccessFile arq1, RandomAccessFile arq2, RandomAccessFile arq4,
-      int tamCaminho) {
+      int tamCaminho, int contadorPRINCIPAL) {
 
     boolean ultimoSavearq4 = false;
 
@@ -326,8 +341,15 @@ public class ordenacaoexterna {
           arq4.seek(tamArq4);
           int tamanhoCaminhoIncompleto1 = (int) arq1.length();
           tamanhoCaminhoIncompleto1 /= 13;
-          if (tamanhoCaminhoIncompleto1 != tamCaminho) {
-            tamanhoCaminhoIncompleto1 -= tamCaminho;
+
+          if (tamanhoCaminhoIncompleto1 > tamCaminho) {
+
+            if (tamanhoCaminhoIncompleto1 != tamCaminho && (tamanhoArq2Inteiro < (tamCaminho * contadorPRINCIPAL))) {
+              tamanhoCaminhoIncompleto1 = tamanhoCaminhoIncompleto1 - (tamCaminho * (contadorPRINCIPAL - 1));
+              ;
+            } else {
+              tamanhoCaminhoIncompleto1 = tamCaminho;
+            }
           }
           while (contardorPonteiroArq1 < (tamanhoCaminhoIncompleto1)) {
             arq4.writeShort(ic.getIdIndice());
@@ -348,10 +370,15 @@ public class ordenacaoexterna {
           arq4.seek(tamArq4);
           int tamanhoCaminhoIncompleto2 = (int) arq2.length();
           tamanhoCaminhoIncompleto2 /= 13;
-          if (tamanhoCaminhoIncompleto2 != tamCaminho) {
-            tamanhoCaminhoIncompleto2 -= tamCaminho;
-          }
 
+          if (tamanhoCaminhoIncompleto2 > tamCaminho) {
+
+            if (tamanhoCaminhoIncompleto2 != tamCaminho && (tamanhoArq2Inteiro < (tamCaminho * contadorPRINCIPAL))) {
+              tamanhoCaminhoIncompleto2 = tamanhoCaminhoIncompleto2 - (tamCaminho * (contadorPRINCIPAL - 1));
+            } else {
+              tamanhoCaminhoIncompleto2 = tamCaminho;
+            }
+          }
           while (contardorPonteiroArq2 < (tamanhoCaminhoIncompleto2)) {
             arq4.writeShort(ic2.getIdIndice());
             arq4.writeLong(ic2.getPosiIndice());
@@ -398,7 +425,7 @@ public class ordenacaoexterna {
   }
 
   public static boolean ordernar3e4para1(RandomAccessFile arq1, RandomAccessFile arq3, RandomAccessFile arq4,
-      int tamCaminho) {
+      int tamCaminho, int contadorPRINCIPAL) {
 
     boolean ultimoSalveArq1 = false;
     try {
@@ -488,10 +515,16 @@ public class ordenacaoexterna {
           int tamanhoCaminhoIncompleto3 = (int) arq3.length();
           tamanhoCaminhoIncompleto3 /= 13;
 
-          if (tamanhoCaminhoIncompleto3 != tamCaminho) {
-            tamanhoCaminhoIncompleto3 -= tamCaminho;
-          }
+          if (tamanhoCaminhoIncompleto3 > tamCaminho) {
 
+            if (tamanhoCaminhoIncompleto3 != tamCaminho
+                && (tamanhoCaminhoIncompleto3 < (tamCaminho * contadorPRINCIPAL))) {
+              tamanhoCaminhoIncompleto3 = tamanhoCaminhoIncompleto3 - (tamCaminho * (contadorPRINCIPAL - 1));
+
+            } else {
+              tamanhoCaminhoIncompleto3 = tamCaminho;
+            }
+          }
           while (contardorPonteiroArq3 < (tamanhoCaminhoIncompleto3)) {
             arq1.writeShort(ic.getIdIndice());
             arq1.writeLong(ic.getPosiIndice());
@@ -512,8 +545,14 @@ public class ordenacaoexterna {
           int tamanhoCaminhoIncompleto4 = (int) arq4.length();
           tamanhoCaminhoIncompleto4 /= 13;
 
-          if (tamanhoCaminhoIncompleto4 != tamCaminho) {
-            tamanhoCaminhoIncompleto4 -= tamCaminho;
+          if (tamanhoCaminhoIncompleto4 > tamCaminho) {
+
+            if (tamanhoCaminhoIncompleto4 != tamCaminho
+                && (tamanhoCaminhoIncompleto4 < (tamCaminho * contadorPRINCIPAL))) {
+              tamanhoCaminhoIncompleto4 = tamanhoCaminhoIncompleto4 - (tamCaminho * (contadorPRINCIPAL - 1));
+            } else {
+              tamanhoCaminhoIncompleto4 = tamCaminho;
+            }
           }
 
           while (contardorPonteiroArq4 < (tamanhoCaminhoIncompleto4)) {
@@ -560,7 +599,7 @@ public class ordenacaoexterna {
   }
 
   public static boolean ordernar3e4para2(RandomAccessFile arq2, RandomAccessFile arq3, RandomAccessFile arq4,
-      int tamCaminho) {
+      int tamCaminho, int contadorPRINCIPAL) {
 
     boolean ultimoSavearq2 = false;
 
@@ -644,11 +683,18 @@ public class ordenacaoexterna {
         }
         // caso agora o arquivo 4 nao esteja completo e o 3 sim
 
-        if (contardorPonteiroArq3 != tamCaminho) {
+        if (contardorPonteiroArq3 != tamCaminho) {// caso1
           long tamArq2 = arq2.length();
           int qtdElementosarq2 = (int) tamArq2 / 13;
-          if (qtdElementosarq2 != tamCaminho) {
-            qtdElementosarq2 -= tamCaminho;
+
+          if (qtdElementosarq2 > tamCaminho) {
+
+            if (qtdElementosarq2 != tamCaminho && (qtdElementosarq2 < (tamCaminho * contadorPRINCIPAL))) {
+              qtdElementosarq2 = qtdElementosarq2 - (tamCaminho * (contadorPRINCIPAL - 1));
+
+            } else {
+              qtdElementosarq2 = tamCaminho;
+            }
           }
           arq2.seek(tamArq2);
           while (contardorPonteiroArq3 < (qtdElementosarq2)) {
@@ -664,14 +710,21 @@ public class ordenacaoexterna {
 
           }
 
-        } else if (contardorPonteiroArq4 != tamCaminho) {
+        } else if (contardorPonteiroArq4 != tamCaminho) {// caso 2
 
           long tamArq2 = arq2.length();
-          int qtdElementosarq2 = (int) tamArq2 / 13;
-          if (qtdElementosarq2 != tamCaminho) {
-            qtdElementosarq2 -= tamCaminho;
-          }
           arq2.seek(tamArq2);
+          int qtdElementosarq2 = (int) tamArq2 / 13;
+
+          if (qtdElementosarq2 > tamCaminho) {
+
+            if (qtdElementosarq2 != tamCaminho && (qtdElementosarq2 < (tamCaminho * contadorPRINCIPAL))) {
+              qtdElementosarq2 = qtdElementosarq2 - (tamCaminho * (contadorPRINCIPAL - 1));
+            } else {
+              qtdElementosarq2 = tamCaminho;
+            }
+          }
+
           while (contardorPonteiroArq4 < (qtdElementosarq2)) {
             arq2.writeShort(ic2.getIdIndice());
             arq2.writeLong(ic2.getPosiIndice());
@@ -785,6 +838,7 @@ public class ordenacaoexterna {
   public static void ordenacaoExterna() {
     arquivocrud arqcru = new arquivocrud();
     int tamanhoCaminho = 10;
+    int contadorParaSubtrairdoCaminho = 1;
     boolean ultimoSavearq1 = false;
     boolean ultimoSavearq2 = false;
     boolean ultimoSavearq3 = false;
@@ -849,19 +903,20 @@ public class ordenacaoexterna {
           arqcru.deletaTudo(-1, -1, -1, 1, 1);
 
           if (contadorEXECPrinc != 0) {
-            tamanhoCaminho += 10;
+            tamanhoCaminho *= 2;
             pararExecucaoPrincipal /= 2;
             arq1.seek(0);
             arq2.seek(0);
             arq3.seek(0);
             arq4.seek(0);
+            contadorParaSubtrairdoCaminho = 0;
           }
 
           while (contadorQtdExecCaminhosMsmArq < pararExecucaoPrincipal) {
 
             if ((contadorQtdExecCaminhosMsmArq % 2) == 0) {// vai ler de 1 e 2 e salvar em 3 e 4
 
-              ultimoSavearq3 = ordernar1e2para3(arq1, arq2, arq3, tamanhoCaminho);
+              ultimoSavearq3 = ordernar1e2para3(arq1, arq2, arq3, tamanhoCaminho, contadorParaSubtrairdoCaminho);
               if (ultimoSavearq3) {
                 ultimoSavearq1 = false;
                 ultimoSavearq2 = false;
@@ -869,13 +924,14 @@ public class ordenacaoexterna {
               }
             } else {// vai ler de 1 e 2 e salvar em 4
 
-              ultimoSavearq4 = ordernar1e2para4(arq1, arq2, arq4, tamanhoCaminho);
+              ultimoSavearq4 = ordernar1e2para4(arq1, arq2, arq4, tamanhoCaminho, contadorParaSubtrairdoCaminho);
               if (ultimoSavearq4) {
                 ultimoSavearq1 = false;
                 ultimoSavearq2 = false;
                 ultimoSavearq3 = false;
               }
             }
+            contadorParaSubtrairdoCaminho++;
             contadorQtdExecCaminhosMsmArq++;
           }
         } else {// aqui vai ler arquivo 3 e 4 e salvar em 1 e 2
@@ -883,7 +939,8 @@ public class ordenacaoexterna {
           arqcru.deletaTudo(-1, 1, 1, -1, -1);
           arq1.seek(0);
           arq2.seek(0);
-          tamanhoCaminho += 10;
+          tamanhoCaminho *= 2;
+          contadorParaSubtrairdoCaminho = 1;
 
           int pararExecucaoPrincipal2 = (int) Math.floor(numeroParaParaExecPRINC / 2);
           int contador3e4salvarem1e2 = 0;
@@ -896,7 +953,7 @@ public class ordenacaoexterna {
 
             if ((contador3e4salvarem1e2 % 2) == 0) {// salvar 3 e 4 no arquivo 1
 
-              ultimoSavearq1 = ordernar3e4para1(arq1, arq3, arq4, tamanhoCaminho);
+              ultimoSavearq1 = ordernar3e4para1(arq1, arq3, arq4, tamanhoCaminho, contadorParaSubtrairdoCaminho);
               if (ultimoSavearq1) {
                 ultimoSavearq3 = false;
                 ultimoSavearq2 = false;
@@ -905,7 +962,7 @@ public class ordenacaoexterna {
 
             } else { // vai salvar 3 e 4 no arquivo 2 (FALTA TESTAR ESSE)
 
-              ultimoSavearq2 = ordernar3e4para2(arq2, arq3, arq4, tamanhoCaminho);
+              ultimoSavearq2 = ordernar3e4para2(arq2, arq3, arq4, tamanhoCaminho, contadorParaSubtrairdoCaminho);
               if (ultimoSavearq2) {
                 ultimoSavearq1 = false;
                 ultimoSavearq3 = false;
@@ -914,6 +971,7 @@ public class ordenacaoexterna {
             }
 
             contador3e4salvarem1e2++;
+            contadorParaSubtrairdoCaminho++;
           }
         }
         contadorEXECPrinc++;
@@ -922,7 +980,8 @@ public class ordenacaoexterna {
       arq2.close();
       arq3.close();
       arq4.close();
-      ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3, ultimoSavearq4);
+      // ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3,
+      // ultimoSavearq4);
     } catch (Exception e) {
       String error = e.getMessage();
       System.out.println("Erro na finalização da OE: " + error);
