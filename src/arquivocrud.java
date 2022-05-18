@@ -11,7 +11,7 @@ public class arquivocrud {
     return precisaOrdernar;
   }
 
-  public void setPrecisarOrdenar(boolean precisaOrdernar) {
+  public void setPrecisarOrdenar(boolean precisaOrdernar) {// ARRUMAR AQUI DEPOISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
     this.precisaOrdernar = precisaOrdernar;
   }
 
@@ -43,7 +43,7 @@ public class arquivocrud {
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
-  public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4) {
+  public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4, int valor5) {
 
     try {
 
@@ -81,6 +81,15 @@ public class arquivocrud {
         PrintWriter writer6 = new PrintWriter("src/database/arq4.db");
         writer6.print("");
         writer6.close();
+      }
+
+      if (valor5 == 1) {
+
+        PrintWriter writer2 = new PrintWriter("src/database/aindices.db");
+
+        writer2.print("");
+        writer2.close();
+
       }
 
     } catch (Exception e) {
@@ -150,7 +159,7 @@ public class arquivocrud {
       }
 
     }
-    precisaOrdernar = true;
+    setPrecisarOrdenar(true);
     System.out.println("------X------");
     System.out.println(ft.toString());
 
@@ -185,7 +194,7 @@ public class arquivocrud {
       System.out.println("\nArquivo com o Campo nome vazio não é possivel ser escrito !\n");
       return;
     }
-    precisaOrdernar = true;
+    setPrecisarOrdenar(true);
   }
 
   // -------------------Create - FIM---------------------------------//
@@ -222,7 +231,6 @@ public class arquivocrud {
 
     // se for para retornar posicao do arquivo de dados é 1, se for do proprio
     // arquivo de indice é 0;
-
     long posicaoRetorno = -1;
     String lapide = "*";
     try {
@@ -237,46 +245,43 @@ public class arquivocrud {
           int esq = arq.readShort();
           int qtdElementos = (int) arq.length() / 13;
 
-          if (temMargemZero()) {
-            arq.seek(arq.length() - 26);
-            qtdElementos -= 1;
-          } else {
-            arq.seek(arq.length() - 13);
-          }
+          arq.seek(arq.length() - 13);
 
           int dir = arq.readShort();
 
+          int numerodoMeio = 0;
+
           int mid = (esq + dir) / 2;
           arq.seek(0);
-          int midSekk = 0;
+
           while (esq <= dir) {
             mid = (esq + dir) / 2;
 
-            if (mid != 0) {
-              midSekk = mid - 1;
+            arq.seek(((mid) * 13) - 13);
 
-              arq.seek(midSekk * 13);
+            if (arq.getFilePointer() < arq.length()) {
 
-            } else {
-              arq.seek(mid * 13);
-            }
+              numerodoMeio = arq.readShort();
 
-            int numerodoMeio = arq.readShort();
+              if (n == numerodoMeio) {
 
-            if (n == numerodoMeio) {
+                posicaoRetorno = arq.readLong();
+                String testelapide = arq.readUTF();
 
-              posicaoRetorno = arq.readLong();
-              String testelapide = arq.readUTF();
+                if (testelapide.equals(lapide)) {
+                  posicaoRetorno = -1;
+                }
+                esq = qtdElementos + 100;
+              } else if (n > numerodoMeio) {
 
-              if (testelapide.equals(lapide)) {
-                posicaoRetorno = -1;
+                esq = mid + 1;
+              } else {
+
+                dir = mid - 1;
               }
-              esq = qtdElementos + 1;
-            } else if (n > numerodoMeio) {
 
-              esq = mid + 1;
             } else {
-              dir = mid - 1;
+              esq = qtdElementos + 100;
             }
           }
         } else {
@@ -291,42 +296,33 @@ public class arquivocrud {
           int esq = arq.readShort();
           int qtdElementos = (int) arq.length() / 13;
 
-          if (temMargemZero()) {
-            arq.seek(arq.length() - 26);
-            qtdElementos -= 1;
-          } else {
-            arq.seek(arq.length() - 13);
-          }
+          arq.seek(arq.length() - 13);
 
           int dir = arq.readShort();
 
           int mid = (esq + dir) / 2;
           arq.seek(0);
-          int midSekk = 0;
+
           while (esq <= dir) {
             mid = (esq + dir) / 2;
 
-            if (mid != 0) {
-              midSekk = mid - 1;
-              arq.seek(midSekk * 13);
-            } else {
-              arq.seek(mid * 13);
-            }
+            arq.seek(((mid) * 13) - 13);
+            if (arq.getFilePointer() < arq.length()) {
+              int numerodoMeio = arq.readShort();
+              if (n == numerodoMeio) {
+                posicaoRetorno = arq.getFilePointer() - 2;
+                String testelapide = arq.readUTF();
 
-            int numerodoMeio = arq.readShort();
-            if (n == numerodoMeio) {
-              posicaoRetorno = arq.getFilePointer() - 2;
-              String testelapide = arq.readUTF();
+                if (testelapide.equals(lapide)) {
+                  posicaoRetorno = -1;
+                }
+                esq = qtdElementos + 1;
+              } else if (n > numerodoMeio) {
 
-              if (testelapide.equals(lapide)) {
-                posicaoRetorno = -1;
+                esq = mid + 1;
+              } else {
+                dir = mid - 1;
               }
-              esq = qtdElementos + 1;
-            } else if (n > numerodoMeio) {
-
-              esq = mid + 1;
-            } else {
-              dir = mid - 1;
             }
           }
 
@@ -361,7 +357,7 @@ public class arquivocrud {
   // pesquisarNoArquivo
   // --------------------------------------
 
-  public long procurarClube(String recebendo, fut ft2) {
+  public long procurarClube(String recebendo, fut ft2) {// ARRRRRUMARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 
     /*
      * como ta sendo feita a escrita
@@ -429,7 +425,7 @@ public class arquivocrud {
 
     } // aqui provavelmente vai ter que ser implementado a lista invertida.
 
-    precisaOrdernar = false;
+    setPrecisarOrdenar(false);
     return retornoPesquisa;
   }
 
@@ -609,7 +605,7 @@ public class arquivocrud {
               idc.setPosiIndice(longArquivoIndice);
               idc.setLapide(" ");
               idc.writeIndicetoArq();
-              precisaOrdernar = true;
+              setPrecisarOrdenar(true);
               System.out.println("Arquivo Atualizado com Sucesso !");
             }
 
