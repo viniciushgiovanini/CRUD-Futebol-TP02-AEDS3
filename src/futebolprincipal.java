@@ -199,7 +199,7 @@ public class futebolprincipal {
             break;
 
           case 9:
-            arqcru.deletaTudo(1, 1, 1, 1, 1);// Método Criado para apagar todo o arquivo
+            arqcru.deletaTudo(1, 1, 1, 1, 1, 1);// Método Criado para apagar todo o arquivo
             arqcru.setPrecisarOrdenar(true);
             arqcru.salvarPrecisaOrdernar(1);
             break;

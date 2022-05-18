@@ -18,7 +18,24 @@ public class ordenacaoexterna {
     return contador;
   }
 
-  public static boolean corrigirArquivoIndice() {
+  public static void limparArquivoDoZeros(long tamArq) {
+    int convertLong = (int) tamArq;
+    byte b[] = new byte[convertLong];
+    try {
+      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
+
+      arq.readFully(b);
+      arquivocrud arqcru = new arquivocrud();
+      arqcru.deletaTudo(-1, -1, -1, -1, -1, 1);
+      arq.seek(0);
+      arq.write(b);
+      arq.close();
+    } catch (Exception e) {
+      System.out.println("Error no bloco limparArquivoDoZeros da OE: " + e.getCause());
+    }
+  }
+
+  public static void corrigirArquivoIndice() {
     // essa explicacao agora tem que ser feita pois nao existe registro comecando em
     // 0 e sim em 1
     // 0_________1___"0"____2________3_________4
@@ -33,7 +50,6 @@ public class ordenacaoexterna {
     // de ordenacao, para ele saber, quando ele deve ignorar as ultimas 13 casas que
     // seria um registro zerado (quando for impar), e quando ele considera esses 13
     // bytes finais (quando o número de elementos no arquivo for par).
-    boolean eImpar = false;
     // funcao tem objetivo de tirar o gap de 0 entre os registros
     try {
 
@@ -62,7 +78,12 @@ public class ordenacaoexterna {
 
           arq.seek((arq.length() - 12));
           arq.write(zerar);
-          eImpar = true;
+
+          arq.seek(arq.length() - 13);
+          long salvarFinalDoArquivo = arq.getFilePointer();
+
+          limparArquivoDoZeros(salvarFinalDoArquivo);
+
         }
 
       }
@@ -72,7 +93,7 @@ public class ordenacaoexterna {
     } catch (Exception e) {
       System.out.println("Aconteceu um error ao corrigir o arquivo de dados: " + e.getMessage());
     }
-    return eImpar;
+
   }
 
   // FUNCOES DE APOIO ORDENACAO EXTERNA
@@ -156,6 +177,7 @@ public class ordenacaoexterna {
 
           }
           contadorDeComparacoes++;
+
         }
 
         // caso o primeiro caminho esta completo e o segundo incompleto
@@ -332,6 +354,7 @@ public class ordenacaoexterna {
           }
 
           contadorDeComparacoes++;
+
         }
 
         // caso o arquivo dois nao seja completo (imcompleto)
@@ -486,8 +509,6 @@ public class ordenacaoexterna {
 
           }
 
-          // fazer a comparacao entre valor do arq 3 e do arq 4
-
           if (valor2Arq4 < valor1Arq3) {
 
             arq1.writeShort(ic2.getIdIndice());
@@ -507,6 +528,7 @@ public class ordenacaoexterna {
 
           }
           contadorDeComparacoes++;
+
         }
         // caso o arquivo 3 esteja completo e o arquivo 4 esteja incompleto
         if (contardorPonteiroArq3 != tamCaminho) {
@@ -550,6 +572,7 @@ public class ordenacaoexterna {
             if (tamanhoCaminhoIncompleto4 != tamCaminho
                 && (tamanhoCaminhoIncompleto4 < (tamCaminho * contadorPRINCIPAL))) {
               tamanhoCaminhoIncompleto4 = tamanhoCaminhoIncompleto4 - (tamCaminho * (contadorPRINCIPAL - 1));
+              tamanhoCaminhoIncompleto4++;
             } else {
               tamanhoCaminhoIncompleto4 = tamCaminho;
             }
@@ -668,7 +691,7 @@ public class ordenacaoexterna {
             arq2.writeUTF(ic2.getLapide());
             podeLerArq3 = false;
             podeLerArq4 = true;
-            contardorPonteiroArq3++;
+            contardorPonteiroArq4++;
 
           } else {
             arq2.writeShort(ic.getIdIndice());
@@ -676,10 +699,12 @@ public class ordenacaoexterna {
             arq2.writeUTF(ic.getLapide());
             podeLerArq3 = true;
             podeLerArq4 = false;
-            contardorPonteiroArq4++;
+            contardorPonteiroArq3++;
 
           }
+
           contadorDeComparacoes++;
+
         }
         // caso agora o arquivo 4 nao esteja completo e o 3 sim
 
@@ -690,7 +715,7 @@ public class ordenacaoexterna {
           if (qtdElementosarq2 > tamCaminho) {
 
             if (qtdElementosarq2 != tamCaminho && (qtdElementosarq2 < (tamCaminho * contadorPRINCIPAL))) {
-              qtdElementosarq2 = qtdElementosarq2 - (tamCaminho * (contadorPRINCIPAL - 1));
+              qtdElementosarq2 = tamCaminho - (contadorPRINCIPAL - 1);
 
             } else {
               qtdElementosarq2 = tamCaminho;
@@ -714,12 +739,13 @@ public class ordenacaoexterna {
 
           long tamArq2 = arq2.length();
           arq2.seek(tamArq2);
-          int qtdElementosarq2 = (int) tamArq2 / 13;
 
+          int qtdElementosarq2 = (int) tamArq4 / 13;
           if (qtdElementosarq2 > tamCaminho) {
 
             if (qtdElementosarq2 != tamCaminho && (qtdElementosarq2 < (tamCaminho * contadorPRINCIPAL))) {
-              qtdElementosarq2 = qtdElementosarq2 - (tamCaminho * (contadorPRINCIPAL - 1));
+              qtdElementosarq2 = tamCaminho - (contadorPRINCIPAL - 1);
+
             } else {
               qtdElementosarq2 = tamCaminho;
             }
@@ -900,7 +926,7 @@ public class ordenacaoexterna {
 
         if ((contadorEXECPrinc % 2) == 0) {
 
-          arqcru.deletaTudo(-1, -1, -1, 1, 1);
+          arqcru.deletaTudo(-1, -1, -1, 1, 1, -1);
 
           if (contadorEXECPrinc != 0) {
             tamanhoCaminho *= 2;
@@ -936,18 +962,14 @@ public class ordenacaoexterna {
           }
         } else {// aqui vai ler arquivo 3 e 4 e salvar em 1 e 2
 
-          arqcru.deletaTudo(-1, 1, 1, -1, -1);
+          arqcru.deletaTudo(-1, 1, 1, -1, -1, -1);
           arq1.seek(0);
           arq2.seek(0);
           tamanhoCaminho *= 2;
-          contadorParaSubtrairdoCaminho = 1;
+          contadorParaSubtrairdoCaminho = 2;
 
           int pararExecucaoPrincipal2 = (int) Math.floor(numeroParaParaExecPRINC / 2);
           int contador3e4salvarem1e2 = 0;
-
-          if (arq3.length() == arq4.length()) {
-            pararExecucaoPrincipal2 -= 1;
-          }
 
           while (contador3e4salvarem1e2 < pararExecucaoPrincipal2) {
 
@@ -980,8 +1002,8 @@ public class ordenacaoexterna {
       arq2.close();
       arq3.close();
       arq4.close();
-      // ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3,
-      // ultimoSavearq4);
+      ordernarToArqIndice(ultimoSavearq1, ultimoSavearq2, ultimoSavearq3,
+          ultimoSavearq4);
     } catch (Exception e) {
       String error = e.getMessage();
       System.out.println("Erro na finalização da OE: " + error);
@@ -992,11 +1014,11 @@ public class ordenacaoexterna {
   public void ordenacaoDistribuicao() {// Essa funcao está pegando 10 registros em 10 porem salvando no msm
     // arquivo que
     // é o arq 1, tem que intercalar pegou 10 arq 1 + 10 arq 2 + 10 arq2
-    boolean eImpar = corrigirArquivoIndice();// essa funcao tem o objetivo de pegar o arquivo e ver se ele esta com a
+    corrigirArquivoIndice();// essa funcao tem o objetivo de pegar o arquivo e ver se ele esta com a
     // quantidade de registros pares ou impares e corrigir o embaralhamento do
     // 0 caso seja impar para fazer a ordenacao
     arquivocrud arqcru = new arquivocrud();
-    arqcru.deletaTudo(-1, 1, 1, -1, -1);
+    arqcru.deletaTudo(-1, 1, 1, -1, -1, -1);
 
     try {
 
@@ -1016,13 +1038,7 @@ public class ordenacaoexterna {
       inteirotamArquivoIndice /= 13;// para pegar a qtd de elementos no arquivo (sem considerar a correcao do 0)
       int inteirotamArquivoIndice2 = inteirotamArquivoIndice;
 
-      if (eImpar) {// caso a correcao indentifique que os ultimos registros não sao vazios ele
-        // retira 1 valor do tamanho do arquivo, o valor adicionado pelo contador, caso
-        // seja impar ele retira o valor referente ao contador + a correcao de 0
-        inteirotamArquivoIndice2 -= 2;
-      } else {
-        inteirotamArquivoIndice2 -= 1;
-      }
+      inteirotamArquivoIndice2 -= 1;
 
       if (inteirotamArquivoIndice != 0) {
 
