@@ -2,16 +2,18 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.6.9.1]
+## Melhorias Versão [0.7]
 
-- A pesquisa binária estava com alguns bugs de ler posi nula, corrigido.  
-- Foi testado a ordenacao externa com 80 caracteres e foi percebido que o 0s ignorados estão entrando na busca, então tem que fazer cada método tentar pular e sobreescrever esses 0s.  
+- Criando a lista invertida (CREATE), incompleto, falta fazer os testes.  
+ 
 
 ## Próxima melhoria (Problemas) 
-- Testar OE com 80 caracteres.  
-   --X--  
-- Fazer Lista invertida  
+- Fazer Lista invertida (Acabar o CREATE e partir para o Read(Pesquisa))  
+  
+   --X--   
 - Juntar CRUD com a lista invertida.  
+- Testar OE com 80 caracteres. 
+
 ## Próximos Passos
 
 - Ordenacao externa final.  

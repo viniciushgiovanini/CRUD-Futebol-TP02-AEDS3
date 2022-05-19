@@ -15,8 +15,6 @@ public class arquivocrud {
     this.precisaOrdernar = precisaOrdernar;
   }
 
-  // ----------------------------------------X----------------------------------------//
-
   public void salvarPrecisaOrdernar(int op) {
     // op 1 guarda a variavel no arquivo
     // op 2 pega a variavel no arquivo
@@ -97,6 +95,7 @@ public class arquivocrud {
     }
 
   }
+  // ----------------------------------------X----------------------------------------//
 
   // --------------------------------------
   // Método escreverArquivo, esse método recebe o objeto ft com os dados ja
@@ -120,8 +119,12 @@ public class arquivocrud {
       // verificarArquivo("dados/futebol.db");
       short idcabecalhosave = 0;
       indice ic = new indice();
+      listainvertida li = new listainvertida();
       arq = new RandomAccessFile("src/database/futebol.db", "rw");
 
+      String nomeSalvarLI = ft.getNome();
+      li.setNomeLista(nomeSalvarLI);
+      long salvarPosiLI = 0;
       if (arq.length() == 0) {
         idcabecalhosave = ft.getIdClube();
         arq.writeShort(idcabecalhosave);
@@ -137,6 +140,7 @@ public class arquivocrud {
       long finaldoarquivo = (long) arq.length();
       arq.seek(finaldoarquivo);
       posiIndice = finaldoarquivo;
+      salvarPosiLI = finaldoarquivo;
       // System.out.println(arq.getFilePointer());
 
       ft.setIdClube(idcabecalhosave);
@@ -148,6 +152,9 @@ public class arquivocrud {
       ic.setIdIndice(idcabecalhosave);
       ic.setPosiIndice(posiIndice);
       ic.writeIndicetoArq();
+
+      // fazer insercao na lista....
+      li.setPosiArqPrinc(salvarPosiLI);
 
     } catch (Exception e) {
       String erro = e.getMessage();
@@ -713,5 +720,4 @@ public class arquivocrud {
     return true;
   }
   // -----------------------UPDATE - FINAL---------------------------------//
-
 }
