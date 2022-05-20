@@ -26,7 +26,7 @@ public class ordenacaoexterna {
 
       arq.readFully(b);
       arquivocrud arqcru = new arquivocrud();
-      arqcru.deletaTudo(-1, -1, -1, -1, -1, 1);
+      arqcru.deletaTudo(-1, -1, -1, -1, -1, 1, -1);
       arq.seek(0);
       arq.write(b);
       arq.close();
@@ -926,7 +926,7 @@ public class ordenacaoexterna {
 
         if ((contadorEXECPrinc % 2) == 0) {
 
-          arqcru.deletaTudo(-1, -1, -1, 1, 1, -1);
+          arqcru.deletaTudo(-1, -1, -1, 1, 1, -1, -1);
 
           if (contadorEXECPrinc != 0) {
             tamanhoCaminho *= 2;
@@ -962,7 +962,7 @@ public class ordenacaoexterna {
           }
         } else {// aqui vai ler arquivo 3 e 4 e salvar em 1 e 2
 
-          arqcru.deletaTudo(-1, 1, 1, -1, -1, -1);
+          arqcru.deletaTudo(-1, 1, 1, -1, -1, -1, -1);
           arq1.seek(0);
           arq2.seek(0);
           tamanhoCaminho *= 2;
@@ -1018,7 +1018,7 @@ public class ordenacaoexterna {
     // quantidade de registros pares ou impares e corrigir o embaralhamento do
     // 0 caso seja impar para fazer a ordenacao
     arquivocrud arqcru = new arquivocrud();
-    arqcru.deletaTudo(-1, 1, 1, -1, -1, -1);
+    arqcru.deletaTudo(-1, 1, 1, -1, -1, -1, -1);
 
     try {
 

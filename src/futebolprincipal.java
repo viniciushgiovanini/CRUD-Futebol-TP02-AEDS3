@@ -154,7 +154,7 @@ public class futebolprincipal {
     while (contador == false) {
       System.out
           .println(
-              "0 - Encerrar Programa \n1 - Cadastrar um Clube \n2 - Realizar partida\n3 - Ler um ID do arquivo\n4 - Realizar Atualização de um Registro\n5 - Realizar o Delete de um Registro ");
+              "0 - Encerrar Programa \n1 - Cadastrar um Clube \n2 - Realizar partida\n3 - Ler um ID do arquivo\n4 - Realizar Atualização de um Registro\n5 - Realizar o Delete de um Registro\n9 - Limpar todos os Arquivos");
 
       // Esse switch case tem 10 opcoes então foi feito com byte mas para evitar erro
       // ele confere se o numero digitado é do tipo byte com a funcao eNumero;
@@ -180,7 +180,7 @@ public class futebolprincipal {
             break;
           case 3:
 
-            System.out.println("Digite o ID ou Nome do Clube a ser procurado no arquivo");
+            System.out.println("Digite o ID, Nome do Clube ou Cidade a ser procurado no arquivo");
             String entradaPesquisadeClube = entrada.nextLine();
             futebas.printarClubesExistentes(arqcru.procurarClube(entradaPesquisadeClube, futebas));
             break;
@@ -199,7 +199,7 @@ public class futebolprincipal {
             break;
 
           case 9:
-            arqcru.deletaTudo(1, 1, 1, 1, 1, 1);// Método Criado para apagar todo o arquivo
+            arqcru.deletaTudo(1, 1, 1, 1, 1, 1, 1);// Método Criado para apagar todo o arquivo
             arqcru.setPrecisarOrdenar(true);
             arqcru.salvarPrecisaOrdernar(1);
             break;

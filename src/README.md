@@ -2,13 +2,13 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.7]
+## Melhorias Versão [0.7.1]
 
-- Criando a lista invertida (CREATE), incompleto, falta fazer os testes.  
+- CREAD READ ESTÃO PRONTO DA LISTA INVERTIDA  
  
 
 ## Próxima melhoria (Problemas) 
-- Fazer Lista invertida (Acabar o CREATE e partir para o Read(Pesquisa))  
+- Fazer Lista invertida (Falta Update e Delete);  
   
    --X--   
 - Juntar CRUD com a lista invertida.  

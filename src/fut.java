@@ -81,10 +81,14 @@ public class fut {
   // --------------------------------------
   public void setCnpj(String cnpjRC) {
 
-    if (verificaCPNJ(cnpjRC) == true) {
+    if (verificaCPNJ(cnpjRC)) {
       this.cnpj = cnpjRC;
     } else {
-      System.out.println("CNPJ NÃO VALIDO");
+
+      if (!(cnpjRC.equals(""))) {
+        System.out.println("CNPJ NÃO VALIDO");
+      }
+
       this.cnpj = "";
     }
 

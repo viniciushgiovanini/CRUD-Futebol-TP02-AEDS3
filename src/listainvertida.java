@@ -3,13 +3,12 @@ import java.io.RandomAccessFile;
 public class listainvertida {
 
   private String nomeLista;
-  private String lapide;
   private long posiArqPrinc;
 
   public listainvertida() {
     nomeLista = null;
     posiArqPrinc = 0;
-    lapide = " ";
+
   }
 
   public void setNomeLista(String nomeLista) {
@@ -20,10 +19,6 @@ public class listainvertida {
     this.posiArqPrinc = posiArqPrinc;
   }
 
-  public void setLapide(String lapide) {
-    this.lapide = lapide;
-  }
-
   public String getNomeLista() {
     return nomeLista;
   }
@@ -32,76 +27,86 @@ public class listainvertida {
     return posiArqPrinc;
   }
 
-  public String getLapide() {
-    return lapide;
-  }
+  // funcoes abaixo referente a lista invertida
 
-  // conferir esses pesquisaListaInvertida e desmembrar
-  public long[] pesquisaListaInvertida(String n) {
-    String concat = "0";
-    long posicoesLI[];
-    posicoesLI = new long[1];
-    boolean marcador = true;
+  private void imprimirListaInvertida(long l[]) {
+
+    fut ft = new fut();
+
     try {
 
-      RandomAccessFile arq = new RandomAccessFile("src/database/listainvertida.db", "rw");
-      long variavelContador = 0;
+      RandomAccessFile arq = new RandomAccessFile("src/database/futebol.db", "rw");
+      long recebervalordeLongdoArray = 0;
+      String lapide = "*";
+      for (int i = 0; i < l.length; i++) {
 
-      while (variavelContador < arq.length()) {
+        recebervalordeLongdoArray = l[i];
 
-        String lerdoArq = arq.readUTF();
+        arq.seek(recebervalordeLongdoArray + 6);
+        String lerLapide = arq.readUTF();
+        if (lerLapide.equals(lapide)) {
+          System.out.println("Arquivo NÃO existe !!!");
+        } else {
 
-        if (lerdoArq.equals(n)) {
+          arq.seek(recebervalordeLongdoArray + 4);
 
-          long pegarOsIndices = 0;
-          String convert;
-          pegarOsIndices = arq.readLong();
+          short Id = arq.readShort();
 
-          while (pegarOsIndices != 0) {
-            concat = "";
-            convert = Long.toString(pegarOsIndices);
-            concat += convert;
-            pegarOsIndices = arq.readLong();
-          }
-          marcador = false;
+          ft.setIdClube(Id);
+
+          lerLapide = arq.readUTF();
+          ft.setLapide(lerLapide);
+
+          String nome = arq.readUTF();
+          ft.setNome(nome);
+
+          String cnpj = arq.readUTF();
+          ft.setCnpj(cnpj);
+
+          String cidade = arq.readUTF();
+          ft.setCidade(cidade);
+
+          byte partidasJogadas = arq.readByte();
+          ft.setPartidasJogadas(partidasJogadas);
+
+          byte pontos = arq.readByte();
+          ft.setPontos(pontos);
+
+          System.out.println(ft.toString());
+
+          ft = new fut();
         }
 
-        if (marcador) {
-          arq.seek(400);
-          variavelContador = arq.getFilePointer();
-        }
-        variavelContador = arq.getFilePointer();
       }
-      posicoesLI = desmembrarStringListaInvertida(concat);
+
       arq.close();
     } catch (Exception e) {
-      System.out.println("Erro na pesquisa na lista invertida: " + e.getCause());
-
+      System.out.println("Error em imprimirListaInvertidaL: " + e.getCause());
     }
-    return posicoesLI;
+
   }
 
-  private long[] desmembrarStringListaInvertida(String n) {
+  private long[] desmembrarStringListaInvertida(String n, int qtdElementos) {
     long posicoesLI[];
-    posicoesLI = new long[1];
+    posicoesLI = new long[qtdElementos];
+    int contadordePeV = 0;
     if (!(n.equals("0"))) {
+      String receberNumero = "";
+      for (int i = 0; i < n.length(); i++) {
 
-      String receberStr = getNomeLista();
-      int qtdelementos = receberStr.length() / 8;
-      posicoesLI = new long[qtdelementos - 1];
+        char letra = n.charAt(i);
 
-      String concat = "";
-      int contadorMandarProarray = 0;
-      long convertStringtoLong = 0;
-      for (int i = 0; i < receberStr.length(); i++) {
+        if (letra != ';') {
+          String letrastr = "" + letra;
+          receberNumero = receberNumero.concat(letrastr);
+        } else {
 
-        char letra = receberStr.charAt(i);
-        concat += letra;
+          long convertStr = 0;
+          convertStr = Long.parseLong(receberNumero, 10);
+          posicoesLI[contadordePeV] = convertStr;
+          contadordePeV++;
+          receberNumero = "";
 
-        if ((i % 8) == 0) {
-          convertStringtoLong = Long.valueOf(concat);
-          posicoesLI[contadorMandarProarray] = convertStringtoLong;
-          concat = "";
         }
 
       }
@@ -112,34 +117,106 @@ public class listainvertida {
     return posicoesLI;
   }
 
-  public long pesquisaListaInvertidaParaoCreate(String n) {
+  public void pesquisaListaInvertida(String n) {
+    String concat = "0";
+    long posicoesLI[];
 
-    long posicoesLI = -1;
-    long posiAntesdoReadString = 0;
     boolean marcador = true;
+    boolean sairdoLoopPrincipal = true;
+    long posiDepoisdoReadString = 0;
+    int qtdElementos = 0;
     try {
 
       RandomAccessFile arq = new RandomAccessFile("src/database/listainvertida.db", "rw");
       long variavelContador = 0;
 
-      while (variavelContador < arq.length()) {
-        posiAntesdoReadString = arq.getFilePointer();
+      while (variavelContador < arq.length() && sairdoLoopPrincipal) {
         String lerdoArq = arq.readUTF();
+        posiDepoisdoReadString = arq.getFilePointer();
 
         if (lerdoArq.equals(n)) {
 
           long pegarOsIndices = 0;
+          String convert;
           pegarOsIndices = arq.readLong();
-
-          if (pegarOsIndices != 0) {
-            posicoesLI = posiAntesdoReadString;
-            variavelContador = arq.length();
+          concat = "";
+          while (pegarOsIndices != 0 && pegarOsIndices != -10) {
+            qtdElementos++;
+            convert = Long.toString(pegarOsIndices);
+            concat = concat.concat(convert + ";");
+            pegarOsIndices = arq.readLong();
           }
+          marcador = false;
+          sairdoLoopPrincipal = false;
+          variavelContador = arq.length();
+        }
+
+        if (marcador) {
+          arq.seek(posiDepoisdoReadString + 168);
+        }
+        variavelContador = arq.getFilePointer();
+      }
+      posicoesLI = desmembrarStringListaInvertida(concat, qtdElementos);
+      imprimirListaInvertida(posicoesLI);
+      arq.close();
+    } catch (Exception e) {
+      System.out.println("Erro na pesquisa na lista invertida: " + e.getCause());
+
+    }
+
+  }
+
+  public long pesquisaListaInvertidaParaoCreate(String n) {
+
+    long posicoesLI = -1;
+
+    long posiDepoisdoReadString = 0;
+    long posiAntesdoReadLong = 0;
+    boolean marcador = true;
+    boolean marcadorLoop1 = true;
+    try {
+
+      RandomAccessFile arq = new RandomAccessFile("src/database/listainvertida.db", "rw");
+      long variavelContador = 0;
+
+      while (variavelContador < arq.length() && marcadorLoop1) {
+        String lerdoArq = "";
+        if (arq.getFilePointer() != 0) {
+
+          lerdoArq = arq.readUTF();
+
+        } else {
+          lerdoArq = arq.readUTF();
+        }
+
+        posiDepoisdoReadString = arq.getFilePointer();
+
+        if (lerdoArq.equals(n)) {
+          boolean marcador2 = true;
+          long pegarOsIndices = 0;
+          while (pegarOsIndices != -10 && marcador2) {
+            posiAntesdoReadLong = arq.getFilePointer();
+            pegarOsIndices = arq.readLong();
+
+            if (pegarOsIndices == 0) {
+              posicoesLI = posiAntesdoReadLong;
+              variavelContador = arq.length();
+              marcador2 = false;
+              marcadorLoop1 = false;
+            } else {
+              if (pegarOsIndices == -10) {
+                marcador2 = false;
+                System.out.println("Não foi implementado na lista, lista cheia !");
+              }
+            }
+          }
+
           marcador = false;
         }
 
         if (marcador) {
-          arq.seek(400);
+
+          arq.seek(posiDepoisdoReadString + 168);
 
         }
 
@@ -154,7 +231,25 @@ public class listainvertida {
     return posicoesLI;
   }
 
-  public void escreverListaInvertida(String nome, String lap) {
+  public void completar20casa(long posi) {
+    try {
+      RandomAccessFile arq = new RandomAccessFile("src/database/listainvertida.db", "rw");
+
+      arq.seek(posi);
+      long zero = 0;
+      for (int i = 0; i < 19; i++) {
+
+        arq.writeLong(zero);
+
+      }
+      arq.writeLong(-10);
+      arq.close();
+    } catch (Exception e) {
+      System.out.println("Error completar20Casa: " + e.getCause());
+    }
+  }
+
+  public void escreverListaInvertida(String nome) {
 
     try {
       RandomAccessFile arq = new RandomAccessFile("src/database/listainvertida.db", "rw");
@@ -165,45 +260,26 @@ public class listainvertida {
         posicoesLI = pesquisaListaInvertidaParaoCreate(nome);
 
         if (posicoesLI != -1) {
-          long salvarPosicaoDeEscrita = 0;
+
           arq.seek(posicoesLI);
-          String pegarNome;
-          pegarNome = arq.readUTF();
-
-          if (pegarNome.equals(nome)) {
-            boolean verificador = true;
-            while (verificador) {
-
-              long lerPosi = 0;
-
-              lerPosi = arq.readLong();
-
-              if (lerPosi == 0) {
-                salvarPosicaoDeEscrita = arq.getFilePointer() - 8;
-                verificador = false;
-              }
-
-            }
-
-          }
-
-          arq.seek(salvarPosicaoDeEscrita);
           arq.writeLong(getPosiArqPrinc());
-          arq.writeUTF(getLapide());
+
         } else {
 
           arq.seek(arq.length());
-          arq.writeUTF(getNomeLista());
+          String receberNomeLista = getNomeLista();
+          arq.writeUTF(receberNomeLista);
           arq.writeLong(getPosiArqPrinc());
-          arq.writeUTF(getLapide());
+          completar20casa(arq.getFilePointer());
 
         }
       } else {
 
         arq.seek(0);
-        arq.writeUTF(getNomeLista());
+        String receberNomeLista = getNomeLista();
+        arq.writeUTF(receberNomeLista);
         arq.writeLong(getPosiArqPrinc());
-        arq.writeUTF(getLapide());
+        completar20casa(arq.getFilePointer());
 
       }
       arq.close();

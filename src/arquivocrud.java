@@ -41,7 +41,7 @@ public class arquivocrud {
   // --------------------------------------
   // Método deletaTudo é um método que apaga todo o arquivo !
   // --------------------------------------
-  public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4, int valor5) {
+  public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4, int valor5, int valor6) {
 
     try {
 
@@ -87,6 +87,14 @@ public class arquivocrud {
 
         writer2.print("");
         writer2.close();
+
+      }
+
+      if (valor6 == 1) {
+        PrintWriter writer = new PrintWriter("src/database/listainvertida.db");
+
+        writer.print("");
+        writer.close();
 
       }
 
@@ -155,6 +163,12 @@ public class arquivocrud {
 
       // fazer insercao na lista....
       li.setPosiArqPrinc(salvarPosiLI);
+      li.escreverListaInvertida(ft.getNome());
+
+      if (!(ft.getCidade().equals(""))) {
+        li.setNomeLista(ft.getCidade());
+        li.escreverListaInvertida(ft.getCidade());
+      }
 
     } catch (Exception e) {
       String erro = e.getMessage();
@@ -430,7 +444,12 @@ public class arquivocrud {
         }
       }
 
-    } // aqui provavelmente vai ter que ser implementado a lista invertida.
+    } else {
+      listainvertida li = new listainvertida();
+
+      li.pesquisaListaInvertida(recebendo);
+
+    }
 
     setPrecisarOrdenar(false);
     return retornoPesquisa;
