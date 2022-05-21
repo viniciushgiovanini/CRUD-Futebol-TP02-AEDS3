@@ -117,13 +117,17 @@ public class listainvertida {
     return posicoesLI;
   }
 
-  public void pesquisaListaInvertida(String n) {
+  public long pesquisaListaInvertida(String n, boolean eParaImprimir) {
+
+    long retornarPosicao = -1;
+
     String concat = "0";
     long posicoesLI[];
 
     boolean marcador = true;
     boolean sairdoLoopPrincipal = true;
     long posiDepoisdoReadString = 0;
+    long posiAntesdoReadLong = 0;
     int qtdElementos = 0;
     try {
 
@@ -131,20 +135,28 @@ public class listainvertida {
       long variavelContador = 0;
 
       while (variavelContador < arq.length() && sairdoLoopPrincipal) {
+        posiAntesdoReadLong = arq.getFilePointer();
         String lerdoArq = arq.readUTF();
         posiDepoisdoReadString = arq.getFilePointer();
 
         if (lerdoArq.equals(n)) {
+          retornarPosicao = posiAntesdoReadLong;
 
-          long pegarOsIndices = 0;
-          String convert;
-          pegarOsIndices = arq.readLong();
-          concat = "";
-          while (pegarOsIndices != 0 && pegarOsIndices != -10) {
-            qtdElementos++;
-            convert = Long.toString(pegarOsIndices);
-            concat = concat.concat(convert + ";");
+          if (eParaImprimir) {
+
+            long pegarOsIndices = 0;
+            String convert;
             pegarOsIndices = arq.readLong();
+            if (pegarOsIndices != 0) {
+              concat = "";
+            }
+
+            while (pegarOsIndices != 0 && pegarOsIndices != -10) {
+              qtdElementos++;
+              convert = Long.toString(pegarOsIndices);
+              concat = concat.concat(convert + ";");
+              pegarOsIndices = arq.readLong();
+            }
           }
           marcador = false;
           sairdoLoopPrincipal = false;
@@ -156,17 +168,23 @@ public class listainvertida {
         }
         variavelContador = arq.getFilePointer();
       }
-      posicoesLI = desmembrarStringListaInvertida(concat, qtdElementos);
-      imprimirListaInvertida(posicoesLI);
+
+      if (!(concat.equals("0"))) {
+        posicoesLI = desmembrarStringListaInvertida(concat, qtdElementos);
+        imprimirListaInvertida(posicoesLI);
+      }
+
       arq.close();
     } catch (Exception e) {
       System.out.println("Erro na pesquisa na lista invertida: " + e.getCause());
 
     }
 
+    return retornarPosicao;
   }
 
-  public long pesquisaListaInvertidaParaoCreate(String n) {
+  public long pesquisaListaInvertidaParaoCreate(String n) {// Aqui retorna posicao no arquivo da lista
+                                                           // invertida
 
     long posicoesLI = -1;
 
@@ -289,4 +307,5 @@ public class listainvertida {
     }
 
   }
+
 }

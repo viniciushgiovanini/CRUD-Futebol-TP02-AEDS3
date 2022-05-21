@@ -27,10 +27,10 @@ public class futebolprincipal {
     System.out.println();
     boolean retorno = true;
 
-    long retornoTimeUm = arq.procurarClube(timeUm, time1);
+    long retornoTimeUm = arq.procurarClube(timeUm, time1, 0);
 
     if (retornoTimeUm >= 0) {
-      long retornoTimeDois = arq.procurarClube(timeDois, time2);
+      long retornoTimeDois = arq.procurarClube(timeDois, time2, 0);
 
       System.out.println(time1.toString());
       System.out.println(time2.toString());
@@ -182,7 +182,8 @@ public class futebolprincipal {
 
             System.out.println("Digite o ID, Nome do Clube ou Cidade a ser procurado no arquivo");
             String entradaPesquisadeClube = entrada.nextLine();
-            futebas.printarClubesExistentes(arqcru.procurarClube(entradaPesquisadeClube, futebas));
+            futebas.printarClubesExistentes(arqcru.procurarClube(entradaPesquisadeClube, futebas, 0),
+                entradaPesquisadeClube);
             break;
           case 4:
             System.out.println("Digite o ID ou Nome do Clube na qual será atualizado os dados !");

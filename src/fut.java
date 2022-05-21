@@ -209,9 +209,11 @@ public class fut {
   // igual a 0, o registro existe se for -1 ele não existe e se for -10 é um erro,
   // então so pode ser impresso caso seja >= 0
   // --------------------------------------
-  public void printarClubesExistentes(long existeClube) {
+  public void printarClubesExistentes(long existeClube, String entrada) {
 
-    if (existeClube >= 0) {
+    boolean idOrnot = entrada.matches("-?\\d+");
+
+    if (existeClube >= 0 && idOrnot) {
       System.out.println(toString());
     }
 

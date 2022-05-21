@@ -2,9 +2,9 @@
 
 - Essa é a branch **PRINCIPAL**
 
-## Melhorias Versão [0.7.1]
+## Melhorias Versão [0.7.2]
 
-- CREAD READ ESTÃO PRONTO DA LISTA INVERTIDA  
+- DELETE Funcional, Update não funcional pois está na metade da implementação
  
 
 ## Próxima melhoria (Problemas) 

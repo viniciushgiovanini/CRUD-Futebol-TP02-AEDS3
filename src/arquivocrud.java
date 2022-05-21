@@ -378,7 +378,7 @@ public class arquivocrud {
   // pesquisarNoArquivo
   // --------------------------------------
 
-  public long procurarClube(String recebendo, fut ft2) {// ARRRRRUMARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+  public long procurarClube(String recebendo, fut ft2, int metodo) {// ARRRRRUMARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 
     /*
      * como ta sendo feita a escrita
@@ -436,6 +436,7 @@ public class arquivocrud {
             return -10;
           }
         }
+
       } else {
         if (retornoPesquisa == -1) {
 
@@ -443,15 +444,25 @@ public class arquivocrud {
 
         }
       }
+      setPrecisarOrdenar(false);
+    } else {// aqui é quando se faz a pesquisa por nome ou cidade do clube
 
-    } else {
-      listainvertida li = new listainvertida();
+      if (metodo != 5) {
 
-      li.pesquisaListaInvertida(recebendo);
+        listainvertida li = new listainvertida();
+        retornoPesquisa = li.pesquisaListaInvertida(recebendo, true);
+        if (retornoPesquisa == -1) {
+
+          System.out.println("\nRegistro Pesquisado não encontrado !\n");
+
+        }
+      } else {
+        System.out
+            .println("Não pode deletar um Registro a partir do seu nome, tem que deletar a partir do seu ID !!!\n");
+      }
 
     }
 
-    setPrecisarOrdenar(false);
     return retornoPesquisa;
   }
 
@@ -466,6 +477,51 @@ public class arquivocrud {
   // --------------------------------------
 
   // ----------------------Delete-------------------------//
+
+  public boolean arquivoDeleteNaListaInvertida(String nomedoDelete, long posicaoNoArquivoDeDados) {
+
+    RandomAccessFile arqLInvertida;
+    boolean estaDeletado = false;
+
+    listainvertida li = new listainvertida();
+    try {
+
+      long receberPosicaoDoNomeNaListaInvertida = li.pesquisaListaInvertida(nomedoDelete, false);
+
+      arqLInvertida = new RandomAccessFile("src/database/listainvertida.db", "rw");
+      arqLInvertida.seek(receberPosicaoDoNomeNaListaInvertida);
+
+      String nomeLI = arqLInvertida.readUTF();
+
+      if (nomeLI.equals(nomedoDelete)) {
+        long pegarOsIndices = 0;
+        boolean marcador2 = true;
+        long posiAntesdoReadLong = 0;
+        long lapidezero = 0;
+        posiAntesdoReadLong = arqLInvertida.getFilePointer();
+        pegarOsIndices = arqLInvertida.readLong();
+        while (pegarOsIndices != -10 && marcador2) {
+
+          if (pegarOsIndices == posicaoNoArquivoDeDados) {
+
+            arqLInvertida.seek(posiAntesdoReadLong);
+            arqLInvertida.writeLong(lapidezero);
+            marcador2 = false;
+            estaDeletado = true;
+
+          }
+          posiAntesdoReadLong = arqLInvertida.getFilePointer();
+          pegarOsIndices = arqLInvertida.readLong();
+        }
+
+      }
+
+    } catch (Exception e) {
+      System.out.println("Erro no Delete no Arquivo da Lista Invertida");
+    }
+    return estaDeletado;
+  }
+
   public void arquivoDelete(String id, Scanner verificarultimoDelete, fut ft2) {
 
     RandomAccessFile arqP;
@@ -475,7 +531,8 @@ public class arquivocrud {
     try {
       arqP = new RandomAccessFile("src/database/futebol.db", "rw");
       arqIndice = new RandomAccessFile("src/database/aindices.db", "rw");
-      long idExist = procurarClube(id, ft2);
+
+      long idExist = procurarClube(id, ft2, 5);
 
       if (idExist >= 0) {
 
@@ -495,7 +552,14 @@ public class arquivocrud {
           arqIndice.seek(receberPosiArqIndice + 10);
           arqP.writeUTF(lapide);
           arqIndice.writeUTF(lapide);
-          arquivoDeletado = true;
+
+          // mandar para o delete lista invertida, mandar
+          boolean deleteAI = arquivoDeleteNaListaInvertida(ft2.getNome(), idExist);
+
+          if (deleteAI) {
+            arquivoDeletado = true;
+          }
+
         } else {
           System.out.println("Registro não Deletado");
         }
@@ -545,7 +609,7 @@ public class arquivocrud {
     if (tipoDeUpdate.equals("Completo")) {
       fut ft2 = new fut();
       indice idc;
-      long receberProcura = procurarClube(nomeidProcurado, ft2);
+      long receberProcura = procurarClube(nomeidProcurado, ft2, 0);
       byte[] ba;
       String stgConfirma = "";
 
@@ -595,12 +659,12 @@ public class arquivocrud {
               long tamanhoTotalArq = arq.length();
               long longArquivoIndice = tamanhoTotalArq;
               // pegando Id do cabecalho
-              arq.seek(0);
+              arq.seek(receberProcura + 4);
               Short pegarPrimeiroId = 0;
               pegarPrimeiroId = arq.readShort();
               // marcando lapide
-              arq.seek(0);
-              arq.seek(receberProcura + 6);
+              // arq.seek(0);
+              // arq.seek(receberProcura + 6);
               // System.out.println(arq.getFilePointer());
               String lapide = "*";
               arq.writeUTF(lapide);
@@ -608,7 +672,7 @@ public class arquivocrud {
               // indo para o final do arquivo
               arq.seek(0);
               arq.seek(tamanhoTotalArq);
-              pegarPrimeiroId++;
+              // pegarPrimeiroId++;
               short salvarIdnoIndice = pegarPrimeiroId;
               ft2.setIdClube(pegarPrimeiroId);
 
@@ -616,8 +680,8 @@ public class arquivocrud {
               arq.writeInt(ba.length);
               arq.write(ba);
 
-              arq.seek(0);
-              arq.writeShort(pegarPrimeiroId);
+              // arq.seek(0);
+              // arq.writeShort(pegarPrimeiroId);
 
               // mudar registro no arquivo de indice
               int convertIdStringtoInt = Integer.parseInt(nomeidProcurado);
@@ -651,7 +715,7 @@ public class arquivocrud {
     } else {
       if (tipoDeUpdate.equals("Parcial")) {
 
-        long receberProcura = procurarClube(nomeidProcurado, futebasParcial);
+        long receberProcura = procurarClube(nomeidProcurado, futebasParcial, 0);
         byte[] ba;
 
         if (receberProcura >= 0) {
