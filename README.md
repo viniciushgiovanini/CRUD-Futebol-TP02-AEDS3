@@ -10,8 +10,8 @@
 
 ## Etapas
 
-⬜ Arquivo de Índices.  
-⬜ Ordenação Externa.  
+✅ Arquivo de Índices.  
+💹 Ordenação Externa.  
 ⬜ Arquivo com Lista Invertida.
 
 ## Linguagem de Desenvolvimento
