@@ -192,7 +192,7 @@ public class futebolprincipal {
                 entradaPesquisadeClube);
             break;
           case 4:
-            System.out.println("Digite o ID ou Nome do Clube na qual será atualizado os dados !");
+            System.out.println("Digite o ID na qual será atualizado os dados !");
 
             String entradaUpg = entrada.nextLine();
             arqcru.arquivoUpdate(entradaUpg, entrada, "Completo", zero, null);
