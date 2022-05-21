@@ -15,6 +15,12 @@ public class arquivocrud {
     this.precisaOrdernar = precisaOrdernar;
   }
 
+  // --------------------------------------
+  // O método salvarPrecisaOrdernar ele salva em um arquivo separado caso seja
+  // necessário fazer a ordenação externa novamente, desssa forma gravando quando
+  // o arquivo vai estar bagunçado
+  // --------------------------------------
+
   public void salvarPrecisaOrdernar(int op) {
     // op 1 guarda a variavel no arquivo
     // op 2 pega a variavel no arquivo
@@ -39,7 +45,7 @@ public class arquivocrud {
   }
 
   // --------------------------------------
-  // Método deletaTudo é um método que apaga todo o arquivo !
+  // Método deletaTudo é um método que apaga todos os arquivos de dados .db !
   // --------------------------------------
   public void deletaTudo(int valor, int valor1, int valor2, int valor3, int valor4, int valor5, int valor6) {
 
@@ -222,6 +228,13 @@ public class arquivocrud {
 
   // ----------------------READ-------------------------//
 
+  // --------------------------------------
+  // Para criar a ordenação externa ser bem executada criou um modo de
+  // embaralhamento na qual salva os indices pares primeiros e depois os impares,
+  // porém quando ele faz esse salto ele deixa um gap(buraco) de zero, no meio do
+  // arquivo e essa funcao identifica esses gaps para correção
+  // --------------------------------------
+
   public boolean temMargemZero() {
     boolean r = false;
     try {
@@ -267,8 +280,8 @@ public class arquivocrud {
           int qtdElementos = (int) arq.length() / 13;
 
           arq.seek(arq.length() - 13);
-
-          int dir = arq.readShort();
+          long dirconvert = arq.length() / 13;
+          int dir = (int) dirconvert;
 
           int numerodoMeio = 0;
 
@@ -291,6 +304,7 @@ public class arquivocrud {
 
                 if (testelapide.equals(lapide)) {
                   posicaoRetorno = -1;
+
                 }
                 esq = qtdElementos + 100;
               } else if (n > numerodoMeio) {
@@ -318,8 +332,8 @@ public class arquivocrud {
           int qtdElementos = (int) arq.length() / 13;
 
           arq.seek(arq.length() - 13);
-
-          int dir = arq.readShort();
+          long dirconvert = arq.length() / 13;
+          int dir = (int) dirconvert;
 
           int mid = (esq + dir) / 2;
           arq.seek(0);
@@ -336,8 +350,10 @@ public class arquivocrud {
 
                 if (testelapide.equals(lapide)) {
                   posicaoRetorno = -1;
+                  // dir = mid - 1;
                 }
                 esq = qtdElementos + 1;
+
               } else if (n > numerodoMeio) {
 
                 esq = mid + 1;
@@ -447,7 +463,7 @@ public class arquivocrud {
       setPrecisarOrdenar(false);
     } else {// aqui é quando se faz a pesquisa por nome ou cidade do clube
 
-      if (metodo != 5) {
+      if (metodo != 5 && metodo != 4) {
 
         listainvertida li = new listainvertida();
         retornoPesquisa = li.pesquisaListaInvertida(recebendo, true);
@@ -458,7 +474,8 @@ public class arquivocrud {
         }
       } else {
         System.out
-            .println("Não pode deletar um Registro a partir do seu nome, tem que deletar a partir do seu ID !!!\n");
+            .println(
+                "Não pode deletar ou atualizar um Registro a partir do seu nome, tem que deletar a partir do seu ID !!!\n");
       }
 
     }
@@ -477,7 +494,12 @@ public class arquivocrud {
   // --------------------------------------
 
   // ----------------------Delete-------------------------//
-
+  // --------------------------------------
+  // O método arquivoDeleteNaListaInvertida, ele faz em um método separadamente o
+  // delete na lista invertida, lembrando que na Lista invertida, o delete
+  // consiste em apagar o bytes e gravar um conjunto de zero por cima e não marcar
+  // a lapide
+  // --------------------------------------
   public boolean arquivoDeleteNaListaInvertida(String nomedoDelete, long posicaoNoArquivoDeDados) {
 
     RandomAccessFile arqLInvertida;
@@ -555,8 +577,12 @@ public class arquivocrud {
 
           // mandar para o delete lista invertida, mandar
           boolean deleteAI = arquivoDeleteNaListaInvertida(ft2.getNome(), idExist);
+          boolean deleteAI2 = false;
+          if ((!ft2.getNome().equals(""))) {
+            deleteAI2 = arquivoDeleteNaListaInvertida(ft2.getCidade(), idExist);
+          }
 
-          if (deleteAI) {
+          if (deleteAI && deleteAI2) {
             arquivoDeletado = true;
           }
 
@@ -583,6 +609,62 @@ public class arquivocrud {
   }
 
   // ----------------------Delete - FINAL-------------------------//
+  // --------------------------------------
+  // O método arquivoLIUpdate, faz o update da lista invertida, dessa maneira
+  // sempre que for atualizar pra um arquivo maior ou menor que o anterior, tem q
+  // atualizar a lista invertida, ao contrario do arquivo de index que so contem
+  // de informacao o id e o posicionamento, e quando um registro atualizado novo
+  // for menor que o antigo ele pode ocupar a msm posicao não interferindo no
+  // arquivo de indices
+  // --------------------------------------
+  public void arquivoLIUpdate(long posiNOVAdoRegistro, String nomeUpdate, long posicaoNoArquivoDeDados, fut futebas,
+      String palavraParaAdicionarnaLista) {
+
+    RandomAccessFile arqLInvertida;
+
+    listainvertida li = new listainvertida();
+
+    try {
+
+      arqLInvertida = new RandomAccessFile("src/database/listainvertida.db", "rw");
+
+      long receberPosicaoDoNomeNaListaInvertida = li.pesquisaListaInvertida(nomeUpdate, false);
+
+      if (receberPosicaoDoNomeNaListaInvertida != -1) {
+
+        arqLInvertida.seek(receberPosicaoDoNomeNaListaInvertida);
+        String nomeparaLer = arqLInvertida.readUTF();
+        long zero = 0;
+        if (nomeparaLer.equals(nomeUpdate)) {
+          boolean marcador2 = true;
+          long salvarPosiAntesdoReadLong = arqLInvertida.getFilePointer();
+          long pegarOsIndices = arqLInvertida.readLong();
+          while (pegarOsIndices != -10 && marcador2) {
+
+            if (pegarOsIndices == posicaoNoArquivoDeDados) {
+
+              arqLInvertida.seek(salvarPosiAntesdoReadLong);
+              arqLInvertida.writeLong(zero);
+              marcador2 = false;
+            }
+            salvarPosiAntesdoReadLong = arqLInvertida.getFilePointer();
+            pegarOsIndices = arqLInvertida.readLong();
+          }
+
+        }
+      }
+
+      if (!(palavraParaAdicionarnaLista.equals(""))) {
+        li.setNomeLista(palavraParaAdicionarnaLista);
+        li.setPosiArqPrinc(posiNOVAdoRegistro);
+        li.escreverListaInvertida(palavraParaAdicionarnaLista);
+      }
+
+    } catch (Exception e) {
+      System.out.println("Error no arquivoLIUpdate, ERRO: " + e.getCause());
+    }
+
+  }
 
   // -----------------------UPDATE---------------------------------//
   // --------------------------------------
@@ -609,7 +691,7 @@ public class arquivocrud {
     if (tipoDeUpdate.equals("Completo")) {
       fut ft2 = new fut();
       indice idc;
-      long receberProcura = procurarClube(nomeidProcurado, ft2, 0);
+      long receberProcura = procurarClube(nomeidProcurado, ft2, 4);
       byte[] ba;
       String stgConfirma = "";
 
@@ -617,7 +699,9 @@ public class arquivocrud {
 
         System.out.println("Você deseja Atualizar o Registro abaixo ?");
         System.out.println(ft2.toString());
-        System.out.print("Inserir Resposta: ");
+        String salvarFt2nomeAntigop = ft2.getNome();
+        String salvarFt2cidadeAntigop = ft2.getCidade();
+        System.out.print("Inserir Resposta (SIM OU NAO): ");
         stgConfirma = entradaUpdate.nextLine();
 
         if (stgConfirma.toUpperCase().equals("SIM")) {
@@ -651,6 +735,17 @@ public class arquivocrud {
               ba = ft2.toByteArray();
               arq.seek(receberProcura + 4);
               arq.write(ba);
+
+              // fazer atualizacao na lista invertida
+              String palavraParaAdicionarnaLista = ft2.getNome();
+              arquivoLIUpdate(receberProcura, salvarFt2nomeAntigop, receberProcura, ft2,
+                  palavraParaAdicionarnaLista);
+              palavraParaAdicionarnaLista = ft2.getCidade();
+              if (!(salvarFt2cidadeAntigop.equals(""))) {
+                arquivoLIUpdate(receberProcura, salvarFt2cidadeAntigop, receberProcura, ft2,
+                    palavraParaAdicionarnaLista);
+              }
+
               System.out.println("Arquivo Escrito com Sucesso !");
 
             } else {
@@ -660,11 +755,12 @@ public class arquivocrud {
               long longArquivoIndice = tamanhoTotalArq;
               // pegando Id do cabecalho
               arq.seek(receberProcura + 4);
+              arq.seek(0);
               Short pegarPrimeiroId = 0;
               pegarPrimeiroId = arq.readShort();
               // marcando lapide
-              // arq.seek(0);
-              // arq.seek(receberProcura + 6);
+              arq.seek(0);
+              arq.seek(receberProcura + 6);
               // System.out.println(arq.getFilePointer());
               String lapide = "*";
               arq.writeUTF(lapide);
@@ -672,10 +768,16 @@ public class arquivocrud {
               // indo para o final do arquivo
               arq.seek(0);
               arq.seek(tamanhoTotalArq);
-              // pegarPrimeiroId++;
+              long posiNOVAdoRegistro = tamanhoTotalArq;
+
+              pegarPrimeiroId++;
+              arq.seek(0);
+              arq.writeShort(pegarPrimeiroId);
               short salvarIdnoIndice = pegarPrimeiroId;
+
               ft2.setIdClube(pegarPrimeiroId);
 
+              arq.seek(tamanhoTotalArq);
               ba = ft2.toByteArray();
               arq.writeInt(ba.length);
               arq.write(ba);
@@ -694,10 +796,25 @@ public class arquivocrud {
               idc.setIdIndice(salvarIdnoIndice);
               idc.setPosiIndice(longArquivoIndice);
               idc.setLapide(" ");
-              idc.writeIndicetoArq();
+              idc.writeIndiceLastPosi();
               setPrecisarOrdenar(true);
-              System.out.println("Arquivo Atualizado com Sucesso !");
+
+              String palavraParaAdicionarnaLista = ft2.getNome();
+
+              // fazer atualizacao na lista invertida
+              arquivoLIUpdate(posiNOVAdoRegistro, salvarFt2nomeAntigop, receberProcura, ft2,
+                  palavraParaAdicionarnaLista);
+              palavraParaAdicionarnaLista = ft2.getCidade();
+              if (!(salvarFt2cidadeAntigop.equals(""))) {
+                arquivoLIUpdate(posiNOVAdoRegistro, salvarFt2cidadeAntigop, receberProcura, ft2,
+                    palavraParaAdicionarnaLista);
+              }
+
+              System.out.println("Arquivo Atualizado com Sucesso ! \n");
             }
+            System.out.println("----------X----------\n");
+            System.out.println("Novo registro agora ficou assim: ");
+            System.out.println(ft2.toString());
 
           } catch (Exception e) {
             System.out.println("Aconteceu um ERROR: " + e.getMessage());

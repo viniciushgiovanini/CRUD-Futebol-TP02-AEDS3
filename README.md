@@ -12,8 +12,8 @@
 
 ✅ Arquivo de Índices.  
 💹 Ordenação Externa.  
-⬜ Arquivo com Lista Invertida.
-
+✅ Arquivo com Lista Invertida.  
+⬜ Documentação.  
 ## Linguagem de Desenvolvimento
 
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="50px" />

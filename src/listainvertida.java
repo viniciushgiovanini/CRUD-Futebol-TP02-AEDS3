@@ -117,6 +117,18 @@ public class listainvertida {
     return posicoesLI;
   }
 
+  // --------------------------------------
+  // Os dois métodos acima que são o imprimirListaInvertida e o
+  // desmembrarStrngListaInvertida são métodos suporte ao pesquisaListaInvertida,
+  // na qual recebe um nome ou cidade, e pesquisa sua exata posicao na lista
+  // invertida, caso não seja marcado para impressão, a funcao retorna o valor
+  // antes de ler o nome do registro, caso seja para imprimir, o programa
+  // concatena todas as posicoes ali presente separadas por ponto e virgula (;),
+  // mandando para o desmembrar que tranforma todos os registros na string em um
+  // array de long que manda para o imprimir que imprime os registros nessa
+  // posição.
+  // --------------------------------------
+
   public long pesquisaListaInvertida(String n, boolean eParaImprimir) {
 
     long retornarPosicao = -1;
@@ -151,10 +163,13 @@ public class listainvertida {
               concat = "";
             }
 
-            while (pegarOsIndices != 0 && pegarOsIndices != -10) {
-              qtdElementos++;
-              convert = Long.toString(pegarOsIndices);
-              concat = concat.concat(convert + ";");
+            while (pegarOsIndices != -10) {
+              if (pegarOsIndices != 0) {
+                qtdElementos++;
+                convert = Long.toString(pegarOsIndices);
+                concat = concat.concat(convert + ";");
+              }
+
               pegarOsIndices = arq.readLong();
             }
           }
@@ -267,6 +282,10 @@ public class listainvertida {
     }
   }
 
+  // --------------------------------------
+  // O método escreverListaInvertida avalia 2 pontos para o write na lista, se a
+  // lista está vazia, e se o elemento ja está presente na lista,
+  // --------------------------------------
   public void escreverListaInvertida(String nome) {
 
     try {

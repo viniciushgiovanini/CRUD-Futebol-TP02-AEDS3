@@ -44,8 +44,13 @@ public class indice {
     this.posiIndice = posiIndice;
   }
 
-  // faz a escrita do indice no arquivo de maneira desordenada(inserir
-  // clube/create)
+  // --------------------------------------
+  // O método writeIndicetoArq é o write principal, pois ele procura quando se
+  // cria os registros, salvar ele de forma desordenada no arquivo, para gerar uma
+  // desordenação a mais, ele faz isso salvando numeros pares antes dos impares
+  // O normal seria 1------2------3------4
+  // O método faz 2------1------4------3
+  // --------------------------------------
   public void writeIndicetoArq() {
 
     // -------------------Create---------------------------------//
@@ -123,6 +128,51 @@ public class indice {
 
   }
 
+  // --------------------------------------
+  // O método writeIndiceLastPosi foi feito pois foi necessário no update salvar
+  // um novo Indice na ultima posicao do arquivo, não podendo utilizar os
+  // criterios randomicos do primeiro método
+  // --------------------------------------
+
+  public void writeIndiceLastPosi() {
+
+    try {
+      RandomAccessFile arq = new RandomAccessFile("src/database/aindices.db", "rw");
+      long tamdoArq = arq.length();
+      arquivocrud arqcru = new arquivocrud();
+
+      if (arqcru.temMargemZero() == true) {
+
+        arq.seek(tamdoArq - 13);
+        arq.writeShort(idIndice);
+        arq.writeLong(posiIndice);
+        arq.writeUTF(lapide);
+
+      } else {
+
+        arq.seek(tamdoArq);
+        arq.writeShort(getIdIndice());
+        arq.writeLong(getPosiIndice());
+        arq.writeUTF(getLapide());
+      }
+      /*
+       * para salvar o indice sequencialmente de forma crescente
+       * arq.seek(tamdoArq);
+       * arq.writeShort(id);
+       * arq.writeLong(posicao);
+       */
+
+      arq.close();
+    } catch (Exception e) {
+
+      String error = e.getMessage();
+      System.out.println(error);
+      return;
+
+    }
+
+  }
+
   // faz o swap para ordenar a distribuicao
   public static void swapIndice(indice[] a, int posi1, int posi2) {
     indice vTemp[] = new indice[1];
@@ -133,7 +183,7 @@ public class indice {
 
   }
 
-  // quicksort da distribuicao
+  // quicksort da distribuicao da ordenação externa
   public void quicksortIndice(indice[] array, int esq, int dir) {
 
     int i = esq, j = dir;
@@ -156,7 +206,8 @@ public class indice {
 
   }
 
-  // faz um toByteArray para salvar o array de indice no arquivo (distribuicao)
+  // faz um toByteArray para salvar o array de indice no arquivo (distribuicao -
+  // ordenação externa)
   public byte[] toByteArray(indice[] ic, int qtdX) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);

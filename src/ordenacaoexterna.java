@@ -2,7 +2,7 @@ import java.io.*;
 
 public class ordenacaoexterna {
 
-  public static int qtdElementoArrayIndice(indice[] a) {
+  private static int qtdElementoArrayIndice(indice[] a) {
     // essa funcao pega a quantidade de elementos presente no array de objeto
     // indice, foi construida com o objetivo de gerar o número do elemento mais a
     // direita quando o vetor não está completo
@@ -18,7 +18,7 @@ public class ordenacaoexterna {
     return contador;
   }
 
-  public static void limparArquivoDoZeros(long tamArq) {
+  private static void limparArquivoDoZeros(long tamArq) {
     int convertLong = (int) tamArq;
     byte b[] = new byte[convertLong];
     try {
@@ -35,7 +35,15 @@ public class ordenacaoexterna {
     }
   }
 
-  public static void corrigirArquivoIndice() {
+  // --------------------------------------
+  // O método limparArquivodoZeros é um método de apoio para o método de
+  // corrigirArquivoIndice e esse método corrigir tem a função de eleminar os
+  // zeros peridos no meio do arquivo de indices, e quando ele salva todo o
+  // arquivo evitando os zeros em um array de bytes, a função limparArquivoDoZeros
+  // apaga o arquivo e salva o array de byte por cima, retirando os zeros
+  // --------------------------------------
+
+  public void corrigirArquivoIndice() {
     // essa explicacao agora tem que ser feita pois nao existe registro comecando em
     // 0 e sim em 1
     // 0_________1___"0"____2________3_________4
@@ -97,6 +105,15 @@ public class ordenacaoexterna {
   }
 
   // FUNCOES DE APOIO ORDENACAO EXTERNA
+
+  // --------------------------------------
+  // Nessa parte, foi realizada uma distruibuição dos registros em 10 caminhos, e
+  // depois feito a ordenação externa, dessa forma as funções que ordenam do
+  // arquivo 1 e 2 para 3 e 4, são funções de apoio para o método ordenação
+  // externa, e quando acaba tudo ele efetua, ordernarToArqIndice, que ele pega o
+  // ultimo arquivo que foi feito alguma escrita, e copia para o arquivo
+  // aindices.db que é o arquivo de indices principal
+  // --------------------------------------
 
   public static boolean ordernar1e2para3(RandomAccessFile arq1, RandomAccessFile arq2, RandomAccessFile arq3,
       int tamCaminho, int contadorPRINCIPAL) {
