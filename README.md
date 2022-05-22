@@ -8,7 +8,7 @@
 
 - A documentação de instruções pode ser encontrada [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
 
-- A documentação feita desse código pode ser encontrada [AQUI]()
+- A documentação feita desse código pode ser encontrada [AQUI](https://github.com/viniciushgiovanini/CRUD-Futebol-TP02-AEDS3/blob/master/doc/TP02_AEDS3_Lucas_e_Vinícius.pdf)
 
 ## Etapas
 
