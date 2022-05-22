@@ -22,4 +22,4 @@
 
 ## Desenvolvimento ✏
 
-**Feito por**: [Vinícius Henrique Giovanini](https://github.com/viniciushgiovanini)
+**Feito por**: [Vinícius Henrique Giovanini](https://github.com/viniciushgiovanini) e [Lucas Carvalho da Luz](https://github.com/Lucascluz)
