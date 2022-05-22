@@ -19,10 +19,10 @@ public class futebolprincipal {
     Boolean status = false;
     boolean status2 = false;
     entrada = new Scanner(System.in);
-    System.out.print("Digite o nome do primeiro clube da partida: ");
+    System.out.print("Digite o ID do primeiro clube da partida: ");
     String timeUm = entrada.nextLine();
     System.out.println();
-    System.out.print("Digite o nome do SEGUNDO clube da partida: ");
+    System.out.print("Digite o ID do SEGUNDO clube da partida: ");
     String timeDois = entrada.nextLine();
     System.out.println();
     boolean retorno = true;
