@@ -6,14 +6,16 @@
 
 ## Documentação 📜
 
-- A documentação pode ser encontrada [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
+- A documentação de instruções pode ser encontrada [AQUI](https://github.com/viniciushgiovanini/CRUD-Java-TP02-AEDS3/blob/master/doc/Trabalho%20Prático%20II.pdf)
+
+- A documentação feita desse código pode ser encontrada [AQUI]()
 
 ## Etapas
 
 ✅ Arquivo de Índices.  
 💹 Ordenação Externa.  
 ✅ Arquivo com Lista Invertida.  
-⬜ Documentação.  
+✅ Documentação.  
 ## Linguagem de Desenvolvimento
 
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="50px" />
